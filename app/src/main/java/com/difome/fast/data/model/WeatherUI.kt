@@ -1,5 +1,8 @@
 package com.difome.fast.data.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class WeatherUI(
     val city: String,
     val temp: Int,
