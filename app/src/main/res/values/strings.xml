@@ -11,6 +11,8 @@
     <string name="wind_speed_value">%1$s m/s</string>
     <string name="error_loading">Failed to load data</string>
     <string name="forecast_title">Today\'s forecast</string>
+    <string name="search_city_title">Search city</string>
+    <string name="search_city_placeholder">Enter city name...</string>
     <string name="condition_0">☀️ Clear</string>
     <string name="condition_100">🌤️ Few clouds</string>
     <string name="condition_103">🌨️ Hail</string>
