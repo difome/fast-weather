@@ -7,6 +7,7 @@ import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.Calendar
 
 suspend fun loadWeather(locationId: String = "krasnodar"): WeatherUI = withContext(Dispatchers.IO) {
     val connection = URL("${AppConstants.WEATHER_URL}/api/weather/location/forecast/by_id")
@@ -47,11 +48,32 @@ suspend fun loadWeather(locationId: String = "krasnodar"): WeatherUI = withConte
     val now = today.getJSONObject("now")
     val temp = today.getJSONObject("temp")
 
+    val verbalSummary = today.getJSONObject("verbal").getString("gen")
+
+    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+    val hoursArray = today.getJSONArray("hours")
+    
+    var currentHourObj = hoursArray.getJSONObject(0)
+    for (i in 0 until hoursArray.length()) {
+        val item = hoursArray.getJSONObject(i)
+        if (item.getInt("hour") == currentHour) {
+            currentHourObj = item
+            break
+        }
+    }
+
+    val humidity = currentHourObj.getInt("humidity")
+    val windSpeed = currentHourObj.getJSONObject("wind").getDouble("speed")
+
     WeatherUI(
         city = city,
         temp = now.getInt("temp"),
         feelsLike = now.getInt("temp_feels"),
         minTemp = temp.getInt("min"),
-        maxTemp = temp.getInt("max")
+        maxTemp = temp.getInt("max"),
+        conditionCode = now.optInt("condition", 0),
+        humidity = humidity,
+        windSpeed = windSpeed,
+        verbalSummary = verbalSummary
     )
 }
