@@ -16,7 +16,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
@@ -24,10 +26,11 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -90,6 +93,7 @@ fun HomeScreenContent(
 ) {
     var isSearchOpen by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -104,7 +108,9 @@ fun HomeScreenContent(
         when (uiState) {
             is HomeUiState.Loading -> {
                 Box(
-                    modifier = Modifier.fillMaxSize().height(200.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     CircularProgressIndicator()
@@ -142,7 +148,7 @@ fun HomeScreenContent(
                             Text(
                                 text = weather.city,
                                 style = MaterialTheme.typography.titleLarge,
-//                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Icon(
                                 imageVector = Icons.Default.ArrowDropDown,
@@ -194,7 +200,6 @@ fun HomeScreenContent(
                                 text = "${weather.minTemp}°/${weather.maxTemp}°",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
-
                             )
                         }
                     }
@@ -209,9 +214,15 @@ fun HomeScreenContent(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = stringResource(id = R.string.humidity), style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                text = stringResource(id = R.string.humidity),
+                                style = MaterialTheme.typography.labelMedium
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = "${weather.humidity}%", style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                text = "${weather.humidity}%",
+                                style = MaterialTheme.typography.titleLarge
+                            )
                         }
                     }
 
@@ -221,9 +232,17 @@ fun HomeScreenContent(
                         shape = RoundedCornerShape(16.dp)
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = stringResource(id = R.string.wind), style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                text = stringResource(id = R.string.wind),
+                                style = MaterialTheme.typography.labelMedium
+                            )
                             Spacer(modifier = Modifier.height(8.dp))
-                            Text(text = stringResource(id = R.string.wind_speed_value, weather.windSpeed), style = MaterialTheme.typography.titleLarge)
+                            Text(
+                                text = stringResource(
+                                    id = R.string.wind_speed_value,
+                                    weather.windSpeed
+                                ), style = MaterialTheme.typography.titleLarge
+                            )
                         }
                     }
                 }
@@ -250,6 +269,7 @@ fun HomeScreenContent(
                     }
                 }
             }
+
             is HomeUiState.Error -> {
                 Text(
                     text = stringResource(id = R.string.error_loading),
@@ -260,21 +280,63 @@ fun HomeScreenContent(
     }
 
     if (isSearchOpen) {
-        ModalBottomSheet(
-            onDismissRequest = { isSearchOpen = false }
-        ) {
-            SearchCitySheetContent(
-                searchQuery = searchQuery,
-                onQueryChange = {
-                    searchQuery = it
-                    onSearchQueryChange(it)
-                },
-                suggestions = searchSuggestions,
-                onCitySelected = { cityId ->
-                    onCitySelected(cityId)
-                    isSearchOpen = false
+        SearchBar(
+            query = searchQuery,
+            onQueryChange = {
+                searchQuery = it
+                onSearchQueryChange(it)
+            },
+            onSearch = { isSearchOpen = false },
+            active = true,
+            onActiveChange = { isSearchOpen = it },
+            placeholder = { Text(text = stringResource(id = R.string.search_city_placeholder)) },
+            leadingIcon = {
+                IconButton(onClick = { isSearchOpen = false }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                 }
-            )
+            },
+            trailingIcon = {
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = {
+                        searchQuery = ""
+                        onSearchQueryChange("")
+                    }) {
+                        Icon(Icons.Default.Close, contentDescription = null)
+                    }
+                }
+            },
+            modifier = Modifier.fillMaxSize()
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.padding(16.dp)
+            ) {
+                items(searchSuggestions, key = { it.id }) { location ->
+                    Surface(
+                        onClick = {
+                            onCitySelected(location.id)
+                            isSearchOpen = false
+                        },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            Text(
+                                text = location.title,
+                                style = MaterialTheme.typography.bodyLarge,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            if (location.description.isNotEmpty()) {
+                                Text(
+                                    text = location.description,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }
