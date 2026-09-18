@@ -10,9 +10,10 @@
     <string name="wind">Вітер</string>
     <string name="wind_speed_value">%1$s м/с</string>
     <string name="error_loading">Помилка завантаження даних</string>
-    <string name="forecast_title">Прогноз на сьогодні</string>
+    <string name="forecast_title">24-годинний прогноз</string>
     <string name="search_city_title">Пошук міста</string>
     <string name="search_city_placeholder">Введіть назву міста...</string>
+    <string name="now">Зараз</string>
     <string name="condition_0">☀️ Ясно</string>
     <string name="condition_100">🌤️ Невелика хмарність</string>
     <string name="condition_103">🌨️ Град</string>

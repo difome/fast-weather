@@ -10,9 +10,10 @@
     <string name="wind">Ветер</string>
     <string name="wind_speed_value">%1$s м/с</string>
     <string name="error_loading">Ошибка загрузки данных</string>
-    <string name="forecast_title">Прогноз на сегодня</string>
+    <string name="forecast_title">24-часовой прогноз</string>
     <string name="search_city_title">Поиск города</string>
     <string name="search_city_placeholder">Введите название города...</string>
+    <string name="now">Сейчас</string>
     <string name="condition_0">☀️ Ясно</string>
     <string name="condition_100">🌤️ Небольшая облачность</string>
     <string name="condition_103">🌨️ Град</string>

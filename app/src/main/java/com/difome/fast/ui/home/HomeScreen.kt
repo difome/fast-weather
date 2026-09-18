@@ -27,6 +27,7 @@ import com.difome.fast.R
 import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.home.components.CitySearchDialog
+import com.difome.fast.ui.home.components.HourlyForecastRow
 import com.difome.fast.ui.home.components.WeatherHeroCard
 import com.difome.fast.ui.home.components.WeatherMetricsRow
 import com.difome.fast.ui.home.components.WeatherSummaryCard
@@ -112,7 +113,8 @@ fun HomeScreenContent(
 
                 // 3. Карточка текстового прогноза
                 WeatherSummaryCard(summaryText = weather.verbalSummary)
-            }
+
+                HourlyForecastRow(hourlyList = weather.hourlyForecast)            }
 
             is HomeUiState.Error -> {
                 Text(

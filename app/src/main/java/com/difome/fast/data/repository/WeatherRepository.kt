@@ -2,6 +2,7 @@ package com.difome.fast.data.repository
 
 import androidx.appcompat.app.AppCompatDelegate
 import com.difome.fast.common.AppConstants
+import com.difome.fast.data.model.HourForecast
 import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.model.WeatherUI
 import kotlinx.coroutines.Dispatchers
@@ -74,7 +75,19 @@ suspend fun loadWeather(locationId: String = "krasnodar"): WeatherUI = withConte
 
     val humidity = currentHourObj?.optInt("humidity", 0) ?: 0
     val windSpeed = currentHourObj?.optJSONObject("wind")?.optDouble("speed", 0.0) ?: 0.0
-
+    val hourlyList = mutableListOf<HourForecast>()
+    if (hoursArray != null) {
+        for (i in 0 until hoursArray.length()) {
+            val item = hoursArray.getJSONObject(i)
+            hourlyList.add(
+                HourForecast(
+                    hour = item.getInt("hour"),
+                    temp = item.getInt("temp"),
+                    conditionCode = item.optInt("condition", 0)
+                )
+            )
+        }
+    }
     WeatherUI(
         city = city,
         temp = now.getInt("temp"),
@@ -84,7 +97,8 @@ suspend fun loadWeather(locationId: String = "krasnodar"): WeatherUI = withConte
         conditionCode = now.optInt("condition", 0),
         humidity = humidity,
         windSpeed = windSpeed,
-        verbalSummary = verbalSummary
+        verbalSummary = verbalSummary,
+        hourlyForecast = hourlyList
     )
 
 }
