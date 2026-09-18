@@ -120,9 +120,17 @@ suspend fun searchLocations(query: String): List<LocationSuggestion> = withConte
     val json = JSONObject(response)
     val locationsArray = json.optJSONArray("locations") ?: return@withContext emptyList()
 
+    val ignoredTypes = setOf(101, 102, 103, 104)
+
     val resultList = mutableListOf<LocationSuggestion>()
     for (i in 0 until locationsArray.length()) {
         val item = locationsArray.getJSONObject(i)
+        val type = item.optInt("type", 0)
+
+        if (type in ignoredTypes) {
+            continue
+        }
+
         resultList.add(
             LocationSuggestion(
                 id = item.getString("id"),

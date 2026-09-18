@@ -20,7 +20,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
@@ -30,7 +29,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +46,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.difome.fast.R
@@ -280,58 +280,75 @@ fun HomeScreenContent(
     }
 
     if (isSearchOpen) {
-        SearchBar(
-            query = searchQuery,
-            onQueryChange = {
-                searchQuery = it
-                onSearchQueryChange(it)
-            },
-            onSearch = { isSearchOpen = false },
-            active = true,
-            onActiveChange = { isSearchOpen = it },
-            placeholder = { Text(text = stringResource(id = R.string.search_city_placeholder)) },
-            leadingIcon = {
-                IconButton(onClick = { isSearchOpen = false }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
-                }
-            },
-            trailingIcon = {
-                if (searchQuery.isNotEmpty()) {
-                    IconButton(onClick = {
-                        searchQuery = ""
-                        onSearchQueryChange("")
-                    }) {
-                        Icon(Icons.Default.Close, contentDescription = null)
-                    }
-                }
-            },
-            modifier = Modifier.fillMaxSize()
+        Dialog(
+            onDismissRequest = { isSearchOpen = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
         ) {
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(4.dp),
-                modifier = Modifier.padding(16.dp)
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = MaterialTheme.colorScheme.background
             ) {
-                items(searchSuggestions, key = { it.id }) { location ->
-                    Surface(
-                        onClick = {
-                            onCitySelected(location.id)
-                            isSearchOpen = false
-                        },
-                        shape = RoundedCornerShape(12.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            Text(
-                                text = location.title,
-                                style = MaterialTheme.typography.bodyLarge,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            if (location.description.isNotEmpty()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.Top
+                ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        onSearchQueryChange(it)
+                    },
+                    placeholder = { Text(text = stringResource(id = R.string.search_city_placeholder)) },
+                    leadingIcon = {
+                        IconButton(onClick = { isSearchOpen = false }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        }
+                    },
+                    trailingIcon = {
+                        if (searchQuery.isNotEmpty()) {
+                            IconButton(onClick = {
+                                searchQuery = ""
+                                onSearchQueryChange("")
+                            }) {
+                                Icon(Icons.Default.Close, contentDescription = null)
+                            }
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    items(searchSuggestions, key = { it.id }) { location ->
+                        Surface(
+                            onClick = {
+                                onCitySelected(location.id)
+                                isSearchOpen = false
+                            },
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
                                 Text(
-                                    text = location.description,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    text = location.title,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
                                 )
+                                if (location.description.isNotEmpty()) {
+                                    Text(
+                                        text = location.description,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
                     }
@@ -340,89 +357,77 @@ fun HomeScreenContent(
         }
     }
 }
+}
 
+@Preview(showBackground = true, name = "Search City Preview")
 @Composable
-fun SearchCitySheetContent(
-    searchQuery: String,
-    onQueryChange: (String) -> Unit,
-    suggestions: List<LocationSuggestion>,
-    onCitySelected: (String) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-    ) {
-        Text(
-            text = stringResource(id = R.string.search_city_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = onQueryChange,
-            placeholder = { Text(text = stringResource(id = R.string.search_city_placeholder)) },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier.fillMaxWidth(),
-            singleLine = true,
-            shape = RoundedCornerShape(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+fun SearchBarOverlayPreview() {
+    MyFastTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
         ) {
-            items(suggestions, key = { it.id }) { location ->
-                Surface(
-                    onClick = { onCitySelected(location.id) },
-                    shape = RoundedCornerShape(12.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Top
+            ) {
+                OutlinedTextField(
+                    value = "Rusan",
+                    onValueChange = {},
+                    placeholder = { Text(text = "Search city...") },
+                    leadingIcon = {
+                        IconButton(onClick = {}) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        }
+                    },
+                    trailingIcon = {
+                        IconButton(onClick = {}) {
+                            Icon(Icons.Default.Close, contentDescription = null)
+                        }
+                    },
+                    singleLine = true,
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(
-                            text = location.title,
-                            style = MaterialTheme.typography.bodyLarge,
-                            fontWeight = FontWeight.SemiBold
+                    items(
+                        listOf(
+                            LocationSuggestion("rusaniv", "Rusaniv", "Kyiv region, Brovary district"),
+                            LocationSuggestion("rusanivka", "Rusanivka", "Sumy region, Romny district")
                         )
-                        if (location.description.isNotEmpty()) {
-                            Text(
-                                text = location.description,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
+                    ) { location ->
+                        Surface(
+                            onClick = {},
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Text(
+                                    text = location.title,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                if (location.description.isNotEmpty()) {
+                                    Text(
+                                        text = location.description,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-    }
-}
-
-@Preview(showBackground = true, name = "Search City Preview")
-@Composable
-fun SearchCitySheetPreview() {
-    MyFastTheme {
-        SearchCitySheetContent(
-            searchQuery = "Rusan",
-            onQueryChange = {},
-            suggestions = listOf(
-                LocationSuggestion(
-                    id = "rusaniv",
-                    title = "Rusaniv",
-                    description = "Kyiv region, Brovary district"
-                ),
-                LocationSuggestion(
-                    id = "rusanivka",
-                    title = "Rusanivka",
-                    description = "Sumy region, Romny district"
-                )
-            ),
-            onCitySelected = {}
-        )
     }
 }
 
