@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">My Fast</string>
+    <string name="welcome_message">Привет, %1$s</string>
+    <string name="settings_title">Настройки</string>
+    <string name="back_button">Назад</string>
+    <string name="loading">Загрузка...</string>
+</resources>

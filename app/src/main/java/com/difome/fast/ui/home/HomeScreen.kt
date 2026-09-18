@@ -3,59 +3,46 @@ package com.difome.fast.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.difome.fast.data.model.WeatherUI
-import com.difome.fast.data.repository.loadWeather
+import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.difome.fast.R
 
 @Composable
-fun HomeScreen(name: String, modifier: Modifier = Modifier) {
-    var count by remember { mutableIntStateOf(0) }
-    var weatherData by remember { mutableStateOf<WeatherUI?>(null) }
-    var error by remember { mutableStateOf<String?>(null) }
+fun HomeScreen(
+    name: String,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel()
+) {
 
-    LaunchedEffect(Unit) {
-        try {
-            weatherData = loadWeather()
-        } catch (e: Exception) {
-            error = e.message
-        }
-    }
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
 
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text("Привет, $name")
+        Text(text = stringResource(id = R.string.welcome_message, name))
 
-        Text("Count: $count")
-
-        if (error != null) {
-            Text("Ошибка: $error")
-        } else {
-            Text(weatherData?.city ?: "Загрузка...")
-            Text("${weatherData?.temp ?: "--"}°C")
+        when (val state = uiState) {
+            is HomeUiState.Loading -> {
+                CircularProgressIndicator()
+            }
+            is HomeUiState.Success -> {
+                Text(text = state.weather.city)
+                Text(text = "${state.weather.temp}°C")
+            }
+            is HomeUiState.Error -> {
+                Text(text = "err")
+            }
         }
 
-        Button(
-            onClick = { count++ }) {
-            Text("+1")
-        }
-
-        Button(
-            onClick = { count-- }, enabled = count > 0
-        ) {
-            Text("-1")
-        }
     }
 }
