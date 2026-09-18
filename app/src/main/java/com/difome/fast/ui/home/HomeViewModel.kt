@@ -31,8 +31,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun clearSearch() {
+        _searchSuggestions.value = emptyList()
+    }
+
     fun fetchWeather(locationId: String = currentLocationId) {
         currentLocationId = locationId
+        _searchSuggestions.value = emptyList()
         viewModelScope.launch {
             cityPreferences.saveSelectedCity(locationId)
             _uiState.value = HomeUiState.Loading
