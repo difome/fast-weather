@@ -19,6 +19,11 @@ object AppConstants {
     const val PRESSURE_UNIT_MBAR = "mbar"
     const val PRESSURE_UNIT_MMHG = "mmhg"
 
+    const val THEME_SYSTEM = "system"
+    const val THEME_LIGHT = "light"
+    const val THEME_DARK = "dark"
+    const val THEME_AMOLED = "amoled"
+
     const val DEFAULT_CITY_UK = "kyiv"
     const val DEFAULT_CITY_EN = "london"
     const val DEFAULT_CITY_RU = "krasnodar"

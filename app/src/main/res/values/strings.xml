@@ -21,6 +21,13 @@
     <string name="pressure_unit_title">Pressure units</string>
     <string name="other_section_title">Other settings</string>
     <string name="language_setting_title">App language</string>
+    <string name="theme_setting_title">App theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_amoled">AMOLED Dark</string>
+    <string name="dynamic_color_title">Dynamic colors</string>
+    <string name="app_version">Version %s</string>
     <string name="system_default">System default</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_fahrenheit">°F</string>

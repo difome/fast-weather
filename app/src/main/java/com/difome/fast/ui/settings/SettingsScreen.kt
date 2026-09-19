@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,6 +60,8 @@ fun SettingsScreen(navController: NavController) {
     val isFahrenheit by settingsPrefs.isFahrenheit.collectAsState(initial = false)
     val windUnit by settingsPrefs.windUnit.collectAsState(initial = AppConstants.WIND_UNIT_MS)
     val pressureUnit by settingsPrefs.pressureUnit.collectAsState(initial = AppConstants.PRESSURE_UNIT_MBAR)
+    val themeMode by settingsPrefs.themeMode.collectAsState(initial = AppConstants.THEME_SYSTEM)
+    val isDynamicColor by settingsPrefs.isDynamicColor.collectAsState(initial = true)
 
     val currentAppLocale = AppCompatDelegate.getApplicationLocales().get(0)?.language ?: ""
 
@@ -66,6 +69,8 @@ fun SettingsScreen(navController: NavController) {
         isFahrenheit = isFahrenheit,
         windUnit = windUnit,
         pressureUnit = pressureUnit,
+        themeMode = themeMode,
+        isDynamicColor = isDynamicColor,
         currentAppLocale = currentAppLocale,
         onBackClick = { navController.popBackStack() },
         onToggleFahrenheit = {
@@ -83,6 +88,12 @@ fun SettingsScreen(navController: NavController) {
                 settingsPrefs.savePressureUnit(nextUnit)
             }
         },
+        onThemeModeSelected = { mode ->
+            scope.launch { settingsPrefs.saveThemeMode(mode) }
+        },
+        onToggleDynamicColor = {
+            scope.launch { settingsPrefs.saveDynamicColor(!isDynamicColor) }
+        },
         onLanguageSelected = { langTag ->
             setAppLanguage(langTag)
         }
@@ -94,14 +105,19 @@ fun SettingsScreenContent(
     isFahrenheit: Boolean,
     windUnit: String,
     pressureUnit: String,
+    themeMode: String,
+    isDynamicColor: Boolean,
     currentAppLocale: String,
     onBackClick: () -> Unit,
     onToggleFahrenheit: () -> Unit,
     onToggleWindUnit: () -> Unit,
     onTogglePressureUnit: () -> Unit,
+    onThemeModeSelected: (String) -> Unit,
+    onToggleDynamicColor: () -> Unit,
     onLanguageSelected: (String) -> Unit
 ) {
     var isLanguageDialogOpen by remember { mutableStateOf(false) }
+    var isThemeDialogOpen by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -201,33 +217,77 @@ fun SettingsScreenContent(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp)
         ) {
-            val currentLangDisplay = when (currentAppLocale) {
-                AppConstants.LANG_UK -> "Українська"
-                AppConstants.LANG_RU -> "Русский"
-                AppConstants.LANG_EN -> "English"
-                else -> stringResource(id = R.string.system_default)
-            }
+            Column {
+                val currentLangDisplay = when (currentAppLocale) {
+                    AppConstants.LANG_UK -> "Українська"
+                    AppConstants.LANG_RU -> "Русский"
+                    AppConstants.LANG_EN -> "English"
+                    else -> stringResource(id = R.string.system_default)
+                }
 
-            ListItem(
-                headlineContent = { Text(stringResource(id = R.string.language_setting_title)) },
-                trailingContent = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = currentLangDisplay,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Icon(
-                            imageVector = Icons.Default.ChevronRight,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.language_setting_title)) },
+                    trailingContent = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = currentLangDisplay,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    modifier = Modifier.clickable { isLanguageDialogOpen = true }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+                val currentThemeDisplay = when (themeMode) {
+                    AppConstants.THEME_LIGHT -> stringResource(id = R.string.theme_light)
+                    AppConstants.THEME_DARK -> stringResource(id = R.string.theme_dark)
+                    AppConstants.THEME_AMOLED -> stringResource(id = R.string.theme_amoled)
+                    else -> stringResource(id = R.string.theme_system)
+                }
+
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.theme_setting_title)) },
+                    trailingContent = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = currentThemeDisplay,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    },
+                    modifier = Modifier.clickable { isThemeDialogOpen = true }
+                )
+
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.dynamic_color_title)) },
+                    trailingContent = {
+                        Switch(
+                            checked = isDynamicColor,
+                            onCheckedChange = { onToggleDynamicColor() }
                         )
                     }
-                },
-                modifier = Modifier.clickable { isLanguageDialogOpen = true }
-            )
+                )
+            }
         }
     }
 
@@ -239,6 +299,17 @@ fun SettingsScreenContent(
                 isLanguageDialogOpen = false
             },
             onDismiss = { isLanguageDialogOpen = false }
+        )
+    }
+
+    if (isThemeDialogOpen) {
+        ThemeSelectionDialog(
+            currentThemeMode = themeMode,
+            onThemeSelected = { mode ->
+                onThemeModeSelected(mode)
+                isThemeDialogOpen = false
+            },
+            onDismiss = { isThemeDialogOpen = false }
         )
     }
 }
@@ -301,6 +372,56 @@ fun LanguageSelectionDialog(
     )
 }
 
+@Composable
+fun ThemeSelectionDialog(
+    currentThemeMode: String,
+    onThemeSelected: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val options = listOf(
+        AppConstants.THEME_SYSTEM to stringResource(id = R.string.theme_system),
+        AppConstants.THEME_LIGHT to stringResource(id = R.string.theme_light),
+        AppConstants.THEME_DARK to stringResource(id = R.string.theme_dark),
+        AppConstants.THEME_AMOLED to stringResource(id = R.string.theme_amoled)
+    )
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Text(
+                text = stringResource(id = R.string.theme_setting_title),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                options.forEach { (mode, label) ->
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onThemeSelected(mode) }
+                            .padding(vertical = 8.dp)
+                    ) {
+                        RadioButton(
+                            selected = (currentThemeMode == mode),
+                            onClick = { onThemeSelected(mode) }
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text(text = stringResource(id = R.string.back_button))
+            }
+        }
+    )
+}
+
 private fun setAppLanguage(languageTag: String) {
     val appLocales = if (languageTag.isEmpty()) {
         LocaleListCompat.getEmptyLocaleList()
@@ -318,11 +439,15 @@ fun SettingsScreenPreview() {
             isFahrenheit = false,
             windUnit = AppConstants.WIND_UNIT_MS,
             pressureUnit = AppConstants.PRESSURE_UNIT_MBAR,
+            themeMode = AppConstants.THEME_SYSTEM,
+            isDynamicColor = true,
             currentAppLocale = AppConstants.LANG_UK,
             onBackClick = {},
             onToggleFahrenheit = {},
             onToggleWindUnit = {},
             onTogglePressureUnit = {},
+            onThemeModeSelected = {},
+            onToggleDynamicColor = {},
             onLanguageSelected = {}
         )
     }

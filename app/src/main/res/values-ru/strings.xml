@@ -21,6 +21,13 @@
     <string name="pressure_unit_title">Единицы давления</string>
     <string name="other_section_title">Другие настройки</string>
     <string name="language_setting_title">Язык приложения</string>
+    <string name="theme_setting_title">Тема оформления</string>
+    <string name="theme_system">Системная</string>
+    <string name="theme_light">Светлая</string>
+    <string name="theme_dark">Темная</string>
+    <string name="theme_amoled">AMOLED Темная</string>
+    <string name="dynamic_color_title">Динамические цвета</string>
+    <string name="app_version">Версия %s</string>
     <string name="system_default">Системный по умолчанию</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_fahrenheit">°F</string>

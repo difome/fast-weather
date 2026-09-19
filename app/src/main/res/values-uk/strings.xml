@@ -21,6 +21,13 @@
     <string name="pressure_unit_title">Одиниці вимірювання тиску</string>
     <string name="other_section_title">Інші налаштування</string>
     <string name="language_setting_title">Мова додатку</string>
+    <string name="theme_setting_title">Тема оформлення</string>
+    <string name="theme_system">Системна</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="theme_amoled">AMOLED Темна</string>
+    <string name="dynamic_color_title">Динамічні кольори</string>
+    <string name="app_version">Версія %s</string>
     <string name="system_default">Системна за замовчуванням</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_fahrenheit">°F</string>

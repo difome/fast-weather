@@ -20,7 +20,6 @@ class CityPreferences(private val context: Context) {
         prefs[KEY_SELECTED_CITY] ?: AppConstants.defaultCityId
     }
 
-    // 2. Функция для СОХРАНЕНИЯ города
     suspend fun saveSelectedCity(cityId: String) {
         context.dataStore.edit { prefs ->
             prefs[KEY_SELECTED_CITY] = cityId
