@@ -17,6 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.difome.fast.R
+import com.difome.fast.common.AppConstants
 import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
@@ -25,11 +26,11 @@ import java.util.Locale
 @Composable
 fun WeatherMetricsRow(
     weather: WeatherUI,
-    windUnit: String = "ms",
+    windUnit: String = AppConstants.WIND_UNIT_MS,
     modifier: Modifier = Modifier
 ) {
-    val displayWind = if (windUnit == "kmh") UnitConverter.toKmH(weather.windSpeed) else weather.windSpeed
-    val windUnitText = if (windUnit == "kmh") stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms)
+    val displayWind = if (windUnit == AppConstants.WIND_UNIT_KMH) UnitConverter.toKmH(weather.windSpeed) else weather.windSpeed
+    val windUnitText = if (windUnit == AppConstants.WIND_UNIT_KMH) stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms)
 
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -77,7 +78,7 @@ fun WeatherMetricsRowPreview() {
     MyFastTheme {
         WeatherMetricsRow(
             weather = WeatherUI(
-                city = "Krasnodar",
+                city = "Kyiv",
                 temp = 24,
                 feelsLike = 25,
                 minTemp = 18,

@@ -18,7 +18,6 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
         .openConnection() as HttpURLConnection
     val currentLang = getSinoptikLanguage()
     val body = JSONObject().apply {
-
         put("lang", currentLang)
         put("location_id", locationId)
         put("forecast_days", 10)
@@ -26,14 +25,13 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
 
     connection.requestMethod = "POST"
     connection.doOutput = true
-    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-    connection.setRequestProperty("Content-Type", "application/json")
-    connection.setRequestProperty("Accept", "application/json")
+    connection.setRequestProperty(AppConstants.HEADER_USER_AGENT, AppConstants.USER_AGENT_VALUE)
+    connection.setRequestProperty(AppConstants.HEADER_CONTENT_TYPE, AppConstants.CONTENT_TYPE_JSON)
+    connection.setRequestProperty(AppConstants.HEADER_ACCEPT, AppConstants.CONTENT_TYPE_JSON)
 
     connection.outputStream.use {
         it.write(body.toByteArray(Charsets.UTF_8))
     }
-
 
     if (connection.responseCode !in 200..299) {
         throw Exception("HTTP ${connection.responseCode}")
@@ -42,7 +40,6 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
     val response = connection.inputStream
         .bufferedReader()
         .use { it.readText() }
-
 
     val json = JSONObject(response)
 
@@ -61,7 +58,7 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
 
     val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
     val hoursArray = today.optJSONArray("hours")
-    
+
     var currentHourObj = hoursArray?.optJSONObject(0)
     if (hoursArray != null) {
         for (i in 0 until hoursArray.length()) {
@@ -100,7 +97,6 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
         verbalSummary = verbalSummary,
         hourlyForecast = hourlyList
     )
-
 }
 
 suspend fun searchLocations(query: String): List<LocationSuggestion> = withContext(Dispatchers.IO) {
@@ -118,9 +114,9 @@ suspend fun searchLocations(query: String): List<LocationSuggestion> = withConte
 
     connection.requestMethod = "POST"
     connection.doOutput = true
-    connection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-    connection.setRequestProperty("Content-Type", "application/json")
-    connection.setRequestProperty("Accept", "application/json")
+    connection.setRequestProperty(AppConstants.HEADER_USER_AGENT, AppConstants.USER_AGENT_VALUE)
+    connection.setRequestProperty(AppConstants.HEADER_CONTENT_TYPE, AppConstants.CONTENT_TYPE_JSON)
+    connection.setRequestProperty(AppConstants.HEADER_ACCEPT, AppConstants.CONTENT_TYPE_JSON)
 
     connection.outputStream.use {
         it.write(body.toByteArray(Charsets.UTF_8))
@@ -134,14 +130,12 @@ suspend fun searchLocations(query: String): List<LocationSuggestion> = withConte
     val json = JSONObject(response)
     val locationsArray = json.optJSONArray("locations") ?: return@withContext emptyList()
 
-    val ignoredTypes = setOf(101, 102, 103, 104)
-
     val resultList = mutableListOf<LocationSuggestion>()
     for (i in 0 until locationsArray.length()) {
         val item = locationsArray.getJSONObject(i)
         val type = item.optInt("type", 0)
 
-        if (type in ignoredTypes) {
+        if (type in AppConstants.IGNORED_LOCATION_TYPES) {
             continue
         }
 
@@ -166,9 +160,9 @@ internal fun getSinoptikLanguage(): String {
     }
 
     return when (lang) {
-        "ru" -> "rus"
-        "en" -> "eng"
-        "uk" -> "ukr"
-        else -> "rus"
+        AppConstants.LANG_RU -> AppConstants.SINOPTIK_LANG_RUS
+        AppConstants.LANG_EN -> AppConstants.SINOPTIK_LANG_ENG
+        AppConstants.LANG_UK -> AppConstants.SINOPTIK_LANG_UKR
+        else -> AppConstants.SINOPTIK_LANG_RUS
     }
 }

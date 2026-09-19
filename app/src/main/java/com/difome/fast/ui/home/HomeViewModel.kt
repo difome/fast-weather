@@ -36,7 +36,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         .stateIn(viewModelScope, SharingStarted.Eagerly, false)
 
     val windUnit: StateFlow<String> = settingsPreferences.windUnit
-        .stateIn(viewModelScope, SharingStarted.Eagerly, "ms")
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppConstants.WIND_UNIT_MS)
 
     init {
         viewModelScope.launch {

@@ -5,6 +5,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.difome.fast.common.AppConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -23,11 +24,11 @@ class SettingsPreferences(private val context: Context) {
     }
 
     val windUnit: Flow<String> = context.settingsDataStore.data.map { prefs ->
-        prefs[KEY_WIND_UNIT] ?: "ms"
+        prefs[KEY_WIND_UNIT] ?: AppConstants.WIND_UNIT_MS
     }
 
     val pressureUnit: Flow<String> = context.settingsDataStore.data.map { prefs ->
-        prefs[KEY_PRESSURE_UNIT] ?: "mbar"
+        prefs[KEY_PRESSURE_UNIT] ?: AppConstants.PRESSURE_UNIT_MBAR
     }
 
     suspend fun saveFahrenheit(isFahrenheit: Boolean) {

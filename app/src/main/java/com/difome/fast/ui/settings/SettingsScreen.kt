@@ -25,7 +25,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -45,9 +44,11 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.LocaleListCompat
 import androidx.navigation.NavController
 import com.difome.fast.R
+import com.difome.fast.common.AppConstants
 import com.difome.fast.data.local.SettingsPreferences
 import com.difome.fast.ui.theme.MyFastTheme
 import kotlinx.coroutines.launch
+import java.util.Locale
 
 @Composable
 fun SettingsScreen(navController: NavController) {
@@ -56,8 +57,8 @@ fun SettingsScreen(navController: NavController) {
     val settingsPrefs = remember { SettingsPreferences(context) }
 
     val isFahrenheit by settingsPrefs.isFahrenheit.collectAsState(initial = false)
-    val windUnit by settingsPrefs.windUnit.collectAsState(initial = "ms")
-    val pressureUnit by settingsPrefs.pressureUnit.collectAsState(initial = "mbar")
+    val windUnit by settingsPrefs.windUnit.collectAsState(initial = AppConstants.WIND_UNIT_MS)
+    val pressureUnit by settingsPrefs.pressureUnit.collectAsState(initial = AppConstants.PRESSURE_UNIT_MBAR)
 
     val currentAppLocale = AppCompatDelegate.getApplicationLocales().get(0)?.language ?: ""
 
@@ -72,13 +73,13 @@ fun SettingsScreen(navController: NavController) {
         },
         onToggleWindUnit = {
             scope.launch {
-                val nextUnit = if (windUnit == "ms") "kmh" else "ms"
+                val nextUnit = if (windUnit == AppConstants.WIND_UNIT_MS) AppConstants.WIND_UNIT_KMH else AppConstants.WIND_UNIT_MS
                 settingsPrefs.saveWindUnit(nextUnit)
             }
         },
         onTogglePressureUnit = {
             scope.launch {
-                val nextUnit = if (pressureUnit == "mbar") "mmhg" else "mbar"
+                val nextUnit = if (pressureUnit == AppConstants.PRESSURE_UNIT_MBAR) AppConstants.PRESSURE_UNIT_MMHG else AppConstants.PRESSURE_UNIT_MBAR
                 settingsPrefs.savePressureUnit(nextUnit)
             }
         },
@@ -160,7 +161,7 @@ fun SettingsScreenContent(
                     headlineContent = { Text(stringResource(id = R.string.wind_unit_title)) },
                     trailingContent = {
                         Text(
-                            text = if (windUnit == "kmh") stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
+                            text = if (windUnit == AppConstants.WIND_UNIT_KMH) stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
@@ -175,7 +176,7 @@ fun SettingsScreenContent(
                     headlineContent = { Text(stringResource(id = R.string.pressure_unit_title)) },
                     trailingContent = {
                         Text(
-                            text = if (pressureUnit == "mmhg") stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
+                            text = if (pressureUnit == AppConstants.PRESSURE_UNIT_MMHG) stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
@@ -201,9 +202,9 @@ fun SettingsScreenContent(
             shape = RoundedCornerShape(16.dp)
         ) {
             val currentLangDisplay = when (currentAppLocale) {
-                "uk" -> "Українська"
-                "ru" -> "Русский"
-                "en" -> "English"
+                AppConstants.LANG_UK -> "Українська"
+                AppConstants.LANG_RU -> "Русский"
+                AppConstants.LANG_EN -> "English"
                 else -> stringResource(id = R.string.system_default)
             }
 
@@ -248,12 +249,19 @@ fun LanguageSelectionDialog(
     onLanguageSelected: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val options = listOf(
-        "" to stringResource(id = R.string.system_default),
-        "uk" to "Українська ",
-        "ru" to "Русский",
-        "en" to "English"
-    )
+    val systemLang = Locale.getDefault().language
+    val isSystemRussian = systemLang == AppConstants.LANG_RU
+
+    val options = remember(isSystemRussian) {
+        listOfNotNull(
+            "" to null,
+            AppConstants.LANG_UK to "Українська",
+            if (isSystemRussian) AppConstants.LANG_RU to "Русский" else null,
+            AppConstants.LANG_EN to "English"
+        )
+    }
+
+    val systemDefaultText = stringResource(id = R.string.system_default)
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -266,7 +274,8 @@ fun LanguageSelectionDialog(
         },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                options.forEach { (tag, label) ->
+                options.forEach { (tag, name) ->
+                    val label = name ?: systemDefaultText
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
@@ -307,9 +316,9 @@ fun SettingsScreenPreview() {
     MyFastTheme {
         SettingsScreenContent(
             isFahrenheit = false,
-            windUnit = "ms",
-            pressureUnit = "mbar",
-            currentAppLocale = "uk",
+            windUnit = AppConstants.WIND_UNIT_MS,
+            pressureUnit = AppConstants.PRESSURE_UNIT_MBAR,
+            currentAppLocale = AppConstants.LANG_UK,
             onBackClick = {},
             onToggleFahrenheit = {},
             onToggleWindUnit = {},

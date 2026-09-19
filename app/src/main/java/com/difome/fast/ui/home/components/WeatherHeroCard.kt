@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -32,6 +31,7 @@ import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
+import com.difome.fast.ui.theme.WeatherSunYellow
 
 @Composable
 fun WeatherHeroCard(
@@ -101,7 +101,7 @@ fun WeatherHeroCard(
                     imageVector = WeatherConditionHelper.getIcon(weather.conditionCode),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
-                    tint = Color(0xFFFFB703)
+                    tint = WeatherSunYellow
                 )
             }
 

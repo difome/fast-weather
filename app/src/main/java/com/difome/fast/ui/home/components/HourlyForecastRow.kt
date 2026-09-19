@@ -34,6 +34,8 @@ import com.difome.fast.R
 import com.difome.fast.data.model.HourForecast
 import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.ui.theme.MyFastTheme
+import com.difome.fast.ui.theme.WeatherChartGreen
+import com.difome.fast.ui.theme.WeatherSunYellow
 import java.util.Calendar
 import java.util.Locale
 
@@ -123,13 +125,13 @@ fun HourlyForecastRow(
 
                                 drawPath(
                                     path = linePath,
-                                    color = Color(0xFF7CB342),
+                                    color = WeatherChartGreen,
                                     style = Stroke(width = 2.5.dp.toPx(), cap = StrokeCap.Round)
                                 )
 
                                 if (isNow) {
                                     drawCircle(
-                                        color = Color(0xFF7CB342),
+                                        color = WeatherChartGreen,
                                         radius = 5.5.dp.toPx(),
                                         center = Offset(w / 2f, yCurr)
                                     )
@@ -147,7 +149,7 @@ fun HourlyForecastRow(
                                 imageVector = WeatherConditionHelper.getIcon(item.conditionCode),
                                 contentDescription = null,
                                 modifier = Modifier.size(22.dp),
-                                tint = Color(0xFFFFB703)
+                                tint = WeatherSunYellow
                             )
 
                             Spacer(modifier = Modifier.height(4.dp))
