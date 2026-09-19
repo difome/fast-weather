@@ -65,6 +65,15 @@ fun SettingsScreen(navController: NavController) {
 
     val currentAppLocale = AppCompatDelegate.getApplicationLocales().get(0)?.language ?: ""
 
+    val appVersion = remember(context) {
+        try {
+            val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pInfo.versionName ?: AppConstants.APP_VERSION
+        } catch (e: Exception) {
+            AppConstants.APP_VERSION
+        }
+    }
+
     SettingsScreenContent(
         isFahrenheit = isFahrenheit,
         windUnit = windUnit,
@@ -72,6 +81,7 @@ fun SettingsScreen(navController: NavController) {
         themeMode = themeMode,
         isDynamicColor = isDynamicColor,
         currentAppLocale = currentAppLocale,
+        appVersion = appVersion,
         onBackClick = { navController.popBackStack() },
         onToggleFahrenheit = {
             scope.launch { settingsPrefs.saveFahrenheit(!isFahrenheit) }
@@ -108,6 +118,7 @@ fun SettingsScreenContent(
     themeMode: String,
     isDynamicColor: Boolean,
     currentAppLocale: String,
+    appVersion: String = AppConstants.APP_VERSION,
     onBackClick: () -> Unit,
     onToggleFahrenheit: () -> Unit,
     onToggleWindUnit: () -> Unit,
@@ -289,6 +300,15 @@ fun SettingsScreenContent(
                 )
             }
         }
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = stringResource(id = R.string.app_version, appVersion),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
     }
 
     if (isLanguageDialogOpen) {
@@ -442,6 +462,7 @@ fun SettingsScreenPreview() {
             themeMode = AppConstants.THEME_SYSTEM,
             isDynamicColor = true,
             currentAppLocale = AppConstants.LANG_UK,
+            appVersion = "1.0.0",
             onBackClick = {},
             onToggleFahrenheit = {},
             onToggleWindUnit = {},

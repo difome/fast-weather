@@ -5,6 +5,7 @@ import java.util.Locale
 
 object AppConstants {
     const val WEATHER_URL = "https://sinoptik.ua"
+    const val APP_VERSION = "1.0.0"
 
     const val LANG_UK = "uk"
     const val LANG_RU = "ru"
