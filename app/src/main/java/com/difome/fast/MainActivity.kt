@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,6 +25,7 @@ import com.difome.fast.ui.theme.MyFastTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -46,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                     ) {
                         composable("home") {
                             HomeScreen(
-                                name = "Fast",
+                                name = "FastWeather",
                                 onSettingsClick = { navController.navigate("settings") }
                             )
                         }
@@ -64,6 +66,6 @@ class MainActivity : AppCompatActivity() {
 @Composable
 fun GreetingPreview() {
     MyFastTheme {
-        HomeScreen("Android")
+        HomeScreen("FastWeather")
     }
 }
