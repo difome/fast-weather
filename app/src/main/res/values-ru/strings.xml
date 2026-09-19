@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">FastWeather</string>
     <string name="welcome_message">Привет, %1$s</string>
     <string name="settings_title">Настройки</string>
     <string name="back_button">Назад</string>

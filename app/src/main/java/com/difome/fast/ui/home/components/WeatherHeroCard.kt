@@ -122,10 +122,10 @@ fun WeatherHeroCard(
                     Spacer(modifier = Modifier.width(24.dp))
 
                     Icon(
-                        imageVector = WeatherConditionHelper.getIcon(weather.conditionCode),
+                        imageVector = WeatherConditionHelper.getIcon(weather.conditionCode, weather.isNight),
                         contentDescription = null,
                         modifier = Modifier.size(48.dp),
-                        tint = WeatherSunYellow
+                        tint = if (weather.isNight) Color(0xFFC7D2FE) else WeatherSunYellow
                     )
                 }
 

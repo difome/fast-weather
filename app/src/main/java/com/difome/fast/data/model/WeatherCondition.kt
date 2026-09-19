@@ -5,6 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dehaze
+import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Thunderstorm
 import androidx.compose.material.icons.filled.WbCloudy
 import androidx.compose.material.icons.filled.WbSunny
@@ -13,20 +14,20 @@ import com.difome.fast.R
 
 object WeatherConditionHelper {
 
-    fun getIcon(code: Int): ImageVector {
+    fun getIcon(code: Int, isNight: Boolean = false): ImageVector {
         val thunderCodes = setOf(140, 141, 142, 240, 241, 242, 340, 341, 342, 440, 441, 442)
         val rainCodes = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330, 410, 420, 430)
         val snowCodes = setOf(112, 122, 132, 212, 222, 232, 312, 322, 332, 412, 422, 432)
 
         return when (code) {
-            0 -> Icons.Default.WbSunny
             in thunderCodes -> Icons.Default.Thunderstorm
             in rainCodes -> Icons.Default.Thunderstorm
             in snowCodes -> Icons.Default.AcUnit
-            in 100..309 -> Icons.Default.WbCloudy
             in 400..409 -> Icons.Default.Cloud
             in 600..699 -> Icons.Default.Dehaze
-            else -> Icons.Default.WbSunny
+            in 100..309 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbCloudy
+            0 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
+            else -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
         }
     }
 
