@@ -1,3 +1,5 @@
+import com.android.build.gradle.AppExtension
+import com.android.build.gradle.internal.api.BaseVariantOutputImpl
 import java.util.Properties
 
 plugins {
@@ -12,14 +14,12 @@ android {
         version = release(37)
     }
 
-    val runNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
-
     defaultConfig {
         applicationId = "com.difome.fast"
         minSdk = 24
         targetSdk = 37
-        versionCode = runNumber
-        versionName = "1.0.$runNumber"
+        versionCode = 1
+        versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -73,6 +73,15 @@ android {
         compose = true
         resValues = true
     }
+}
+
+val appExtension = extensions.findByType(AppExtension::class.java)
+appExtension?.applicationVariants?.all { variant ->
+    variant.outputs.configureEach {
+        val output = this as? BaseVariantOutputImpl
+        output?.outputFileName = "FastWeather-${variant.name}-v${variant.versionName}.apk"
+    }
+    true
 }
 
 dependencies {

@@ -50,10 +50,7 @@ jobs:
         with:
           tag_name: "v1.0.${{ github.run_number }}"
           name: "FastWeather v1.0.${{ github.run_number }}"
-          body: |
-            ## FastWeather Automatic Release
-            - Built automatically on push to `${{ github.ref_name }}`
-            - Signed Release APK
+          generate_release_notes: true
           files: app/build/outputs/apk/release/*.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
