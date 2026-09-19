@@ -25,7 +25,7 @@ object WeatherConditionHelper {
             in snowCodes -> Icons.Default.AcUnit
             in 400..409 -> Icons.Default.Cloud
             in 600..699 -> Icons.Default.Dehaze
-            in 100..309 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbCloudy
+            in 100..309 -> if (isNight) Icons.Default.Cloud else Icons.Default.WbCloudy
             0 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
             else -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
         }
