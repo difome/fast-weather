@@ -25,17 +25,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.difome.fast.R
+import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.data.model.WeatherUI
+import com.difome.fast.ui.theme.MyFastTheme
 
 @Composable
 fun WeatherHeroCard(
     weather: WeatherUI,
+    isFahrenheit: Boolean = false,
     onCityClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val displayTemp = if (isFahrenheit) UnitConverter.toFahrenheit(weather.temp) else weather.temp
+    val displayFeelsLike = if (isFahrenheit) UnitConverter.toFahrenheit(weather.feelsLike) else weather.feelsLike
+    val displayMin = if (isFahrenheit) UnitConverter.toFahrenheit(weather.minTemp) else weather.minTemp
+    val displayMax = if (isFahrenheit) UnitConverter.toFahrenheit(weather.maxTemp) else weather.maxTemp
+    val unitSymbol = if (isFahrenheit) "°F" else "°C"
+
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
@@ -80,7 +90,7 @@ fun WeatherHeroCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${weather.temp}°C",
+                    text = "${displayTemp}$unitSymbol",
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -108,16 +118,34 @@ fun WeatherHeroCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(id = R.string.feels_like, weather.feelsLike),
+                    text = stringResource(id = R.string.feels_like, displayFeelsLike),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
                 Text(
-                    text = "${weather.minTemp}°/${weather.maxTemp}°",
+                    text = "${displayMin}°/${displayMax}°",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "Weather Hero Card Preview")
+@Composable
+fun WeatherHeroCardPreview() {
+    MyFastTheme {
+        WeatherHeroCard(
+            weather = WeatherUI(
+                city = "Krasnodar",
+                temp = 24,
+                feelsLike = 25,
+                minTemp = 18,
+                maxTemp = 28,
+                conditionCode = 0
+            ),
+            onCityClick = {}
+        )
     }
 }

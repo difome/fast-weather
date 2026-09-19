@@ -1,0 +1,50 @@
+package com.difome.fast.data.local
+
+import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+
+private val Context.settingsDataStore by preferencesDataStore(name = "settings_prefs")
+
+class SettingsPreferences(private val context: Context) {
+
+    companion object {
+        val KEY_IS_FAHRENHEIT = booleanPreferencesKey("is_fahrenheit")
+        val KEY_WIND_UNIT = stringPreferencesKey("wind_unit")
+        val KEY_PRESSURE_UNIT = stringPreferencesKey("pressure_unit")
+    }
+
+    val isFahrenheit: Flow<Boolean> = context.settingsDataStore.data.map { prefs ->
+        prefs[KEY_IS_FAHRENHEIT] ?: false
+    }
+
+    val windUnit: Flow<String> = context.settingsDataStore.data.map { prefs ->
+        prefs[KEY_WIND_UNIT] ?: "ms"
+    }
+
+    val pressureUnit: Flow<String> = context.settingsDataStore.data.map { prefs ->
+        prefs[KEY_PRESSURE_UNIT] ?: "mbar"
+    }
+
+    suspend fun saveFahrenheit(isFahrenheit: Boolean) {
+        context.settingsDataStore.edit { prefs ->
+            prefs[KEY_IS_FAHRENHEIT] = isFahrenheit
+        }
+    }
+
+    suspend fun saveWindUnit(unit: String) {
+        context.settingsDataStore.edit { prefs ->
+            prefs[KEY_WIND_UNIT] = unit
+        }
+    }
+
+    suspend fun savePressureUnit(unit: String) {
+        context.settingsDataStore.edit { prefs ->
+            prefs[KEY_PRESSURE_UNIT] = unit
+        }
+    }
+}

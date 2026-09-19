@@ -41,6 +41,8 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
+    val isFahrenheit by viewModel.isFahrenheit.collectAsStateWithLifecycle()
+    val windUnit by viewModel.windUnit.collectAsStateWithLifecycle()
 
     val currentLocale = LocalConfiguration.current.locales.get(0)
 
@@ -51,6 +53,8 @@ fun HomeScreen(
     HomeScreenContent(
         name = name,
         uiState = uiState,
+        isFahrenheit = isFahrenheit,
+        windUnit = windUnit,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = { viewModel.searchCities(it) },
         onCitySelected = { viewModel.fetchWeather(it) },
@@ -63,6 +67,8 @@ fun HomeScreenContent(
     modifier: Modifier = Modifier,
     name: String,
     uiState: HomeUiState,
+    isFahrenheit: Boolean = false,
+    windUnit: String = "ms",
     searchSuggestions: List<LocationSuggestion> = emptyList(),
     onSearchQueryChange: (String) -> Unit = {},
     onCitySelected: (String) -> Unit = {}
@@ -105,16 +111,21 @@ fun HomeScreenContent(
                 // 1. Главная синяя карточка погоды
                 WeatherHeroCard(
                     weather = weather,
+                    isFahrenheit = isFahrenheit,
                     onCityClick = { isSearchOpen = true }
                 )
 
                 // 2. Карточки показателей (Влажность + Ветер)
-                WeatherMetricsRow(weather = weather)
+                WeatherMetricsRow(
+                    weather = weather,
+                    windUnit = windUnit
+                )
 
                 // 3. Карточка текстового прогноза
                 WeatherSummaryCard(summaryText = weather.verbalSummary)
 
-                HourlyForecastRow(hourlyList = weather.hourlyForecast)            }
+                HourlyForecastRow(hourlyList = weather.hourlyForecast)
+            }
 
             is HomeUiState.Error -> {
                 Text(

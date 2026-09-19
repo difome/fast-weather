@@ -4,18 +4,22 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.difome.fast.data.local.CityPreferences
+import com.difome.fast.data.local.SettingsPreferences
 import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.repository.loadWeather
 import com.difome.fast.data.repository.searchLocations
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val cityPreferences = CityPreferences(application)
+    private val settingsPreferences = SettingsPreferences(application)
     private var currentLocationId: String = "krasnodar"
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
@@ -23,6 +27,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val _searchSuggestions = MutableStateFlow<List<LocationSuggestion>>(emptyList())
     val searchSuggestions: StateFlow<List<LocationSuggestion>> = _searchSuggestions.asStateFlow()
+
+    val isFahrenheit: StateFlow<Boolean> = settingsPreferences.isFahrenheit
+        .stateIn(viewModelScope, SharingStarted.Eagerly, false)
+
+    val windUnit: StateFlow<String> = settingsPreferences.windUnit
+        .stateIn(viewModelScope, SharingStarted.Eagerly, "ms")
 
     init {
         viewModelScope.launch {

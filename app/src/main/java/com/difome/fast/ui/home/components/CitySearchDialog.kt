@@ -23,11 +23,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.difome.fast.R
 import com.difome.fast.data.model.LocationSuggestion
+import com.difome.fast.ui.theme.MyFastTheme
 
 @Composable
 fun CitySearchDialog(
@@ -106,5 +108,23 @@ fun CitySearchDialog(
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, name = "City Search Dialog Preview")
+@Composable
+fun CitySearchDialogPreview() {
+    MyFastTheme {
+        CitySearchDialog(
+            isOpen = true,
+            searchQuery = "Rusan",
+            onSearchQueryChange = {},
+            suggestions = listOf(
+                LocationSuggestion("rusaniv", "Rusaniv", "Kyiv region, Brovary district"),
+                LocationSuggestion("rusanivka", "Rusanivka", "Sumy region, Romny district")
+            ),
+            onCitySelected = {},
+            onDismiss = {}
+        )
     }
 }
