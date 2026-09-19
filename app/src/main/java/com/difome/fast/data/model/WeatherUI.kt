@@ -13,5 +13,7 @@ data class WeatherUI(
     val humidity: Int = 0,
     val windSpeed: Double = 0.0,
     val verbalSummary: String = "",
-    val hourlyForecast: List<HourForecast> = emptyList()
+    val hourlyForecast: List<HourForecast> = emptyList(),
+    val isNight: Boolean = false,
+    val currentCityHour: Int = 12
 )

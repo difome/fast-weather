@@ -12,6 +12,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.Calendar
 import java.util.Locale
+import java.util.TimeZone
 
 suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): WeatherUI = withContext(Dispatchers.IO) {
     val connection = URL("${AppConstants.WEATHER_URL}/api/weather/location/forecast/by_id")
@@ -37,15 +38,11 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
         throw Exception("HTTP ${connection.responseCode}")
     }
 
-    val response = connection.inputStream
-        .bufferedReader()
-        .use { it.readText() }
-
+    val response = connection.inputStream.bufferedReader().use { it.readText() }
     val json = JSONObject(response)
 
-    val city = json
-        .getJSONObject("location")
-        .getString("title")
+    val locationObj = json.getJSONObject("location")
+    val city = locationObj.getString("title")
 
     val forecast = json.getJSONObject("forecast")
     val date = forecast.keys().next()
@@ -56,47 +53,61 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
 
     val verbalSummary = today.optJSONObject("verbal")?.optString("gen", "") ?: ""
 
-    val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val hoursArray = today.optJSONArray("hours")
+    val sunObj = today.getJSONObject("sun")
+    val riseHour = sunObj.getString("rises_at").split(":").first().toInt()
+    val setHour = sunObj.getString("sets_at").split(":").first().toInt()
 
-    var currentHourObj = hoursArray?.optJSONObject(0)
-    if (hoursArray != null) {
-        for (i in 0 until hoursArray.length()) {
-            val item = hoursArray.optJSONObject(i)
-            if (item != null && item.optInt("hour", -1) == currentHour) {
-                currentHourObj = item
-                break
-            }
+    val tzOffsetSeconds = now.getInt("current_utc_tz_offset")
+    val cityLocalHour = Calendar.getInstance(TimeZone.getTimeZone("UTC")).run {
+        add(Calendar.SECOND, tzOffsetSeconds)
+        get(Calendar.HOUR_OF_DAY)
+    }
+
+    val isNight = cityLocalHour < riseHour || cityLocalHour >= setHour
+
+    val hoursArray = today.getJSONArray("hours")
+
+    var currentHourObj = hoursArray.getJSONObject(0)
+    for (i in 0 until hoursArray.length()) {
+        val item = hoursArray.getJSONObject(i)
+        if (item.getInt("hour") == cityLocalHour) {
+            currentHourObj = item
+            break
         }
     }
 
-    val humidity = currentHourObj?.optInt("humidity", 0) ?: 0
-    val windSpeed = currentHourObj?.optJSONObject("wind")?.optDouble("speed", 0.0) ?: 0.0
+    val humidity = currentHourObj.optInt("humidity", 0)
+    val windSpeed = currentHourObj.optJSONObject("wind")?.optDouble("speed", 0.0) ?: 0.0
+
     val hourlyList = mutableListOf<HourForecast>()
-    if (hoursArray != null) {
-        for (i in 0 until hoursArray.length()) {
-            val item = hoursArray.getJSONObject(i)
-            val condCode = item.optInt("condition", item.optInt("weather", item.optInt("code", 0)))
-            hourlyList.add(
-                HourForecast(
-                    hour = item.getInt("hour"),
-                    temp = item.getInt("temp"),
-                    conditionCode = condCode
-                )
+    for (i in 0 until hoursArray.length()) {
+        val item = hoursArray.getJSONObject(i)
+        val hourVal = item.getInt("hour")
+        val isHourNight = hourVal < riseHour || hourVal >= setHour
+
+        hourlyList.add(
+            HourForecast(
+                hour = hourVal,
+                temp = item.getInt("temp"),
+                conditionCode = item.getInt("condition"),
+                isNight = isHourNight
             )
-        }
+        )
     }
+
     WeatherUI(
         city = city,
         temp = now.getInt("temp"),
         feelsLike = now.getInt("temp_feels"),
         minTemp = temp.getInt("min"),
         maxTemp = temp.getInt("max"),
-        conditionCode = now.optInt("condition", now.optInt("weather", now.optInt("code", 0))),
+        conditionCode = now.getInt("condition"),
         humidity = humidity,
         windSpeed = windSpeed,
         verbalSummary = verbalSummary,
-        hourlyForecast = hourlyList
+        hourlyForecast = hourlyList,
+        isNight = isNight,
+        currentCityHour = cityLocalHour
     )
 }
 

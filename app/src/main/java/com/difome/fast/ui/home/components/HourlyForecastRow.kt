@@ -42,17 +42,17 @@ import java.util.Locale
 @Composable
 fun HourlyForecastRow(
     hourlyList: List<HourForecast>,
+    currentCityHour: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
     modifier: Modifier = Modifier
 ) {
     if (hourlyList.isNotEmpty()) {
-        val currentHour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
         val listState = rememberLazyListState()
 
         val minTemp = hourlyList.minOf { it.temp }
         val maxTemp = hourlyList.maxOf { it.temp }
         val tempRange = (maxTemp - minTemp).coerceAtLeast(1)
 
-        val currentIndex = hourlyList.indexOfFirst { it.hour == currentHour }.coerceAtLeast(0)
+        val currentIndex = hourlyList.indexOfFirst { it.hour == currentCityHour }.coerceAtLeast(0)
 
         LaunchedEffect(currentIndex) {
             listState.scrollToItem(currentIndex)
@@ -76,7 +76,7 @@ fun HourlyForecastRow(
                     horizontalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
                     itemsIndexed(hourlyList, key = { _, item -> item.hour }) { index, item ->
-                        val isNow = item.hour == currentHour
+                        val isNow = item.hour == currentCityHour
                         val timeLabel = if (isNow) {
                             stringResource(id = R.string.now)
                         } else {
@@ -146,7 +146,7 @@ fun HourlyForecastRow(
                             Spacer(modifier = Modifier.height(2.dp))
 
                             Icon(
-                                imageVector = WeatherConditionHelper.getIcon(item.conditionCode, item.hour),
+                                imageVector = WeatherConditionHelper.getIcon(item.conditionCode),
                                 contentDescription = null,
                                 modifier = Modifier.size(22.dp),
                                 tint = WeatherSunYellow
@@ -174,14 +174,14 @@ fun HourlyForecastRowPreview() {
     MyFastTheme {
         HourlyForecastRow(
             hourlyList = listOf(
-                HourForecast(0, 16, 0),
-                HourForecast(3, 15, 0),
-                HourForecast(6, 14, 0),
-                HourForecast(9, 18, 100),
-                HourForecast(12, 24, 0),
-                HourForecast(15, 27, 0),
-                HourForecast(18, 23, 200),
-                HourForecast(21, 19, 400)
+                HourForecast(0, 16, 0, isNight = true),
+                HourForecast(3, 15, 0, isNight = true),
+                HourForecast(6, 14, 0, isNight = false),
+                HourForecast(9, 18, 100, isNight = false),
+                HourForecast(12, 24, 0, isNight = false),
+                HourForecast(15, 27, 0, isNight = false),
+                HourForecast(18, 23, 200, isNight = false),
+                HourForecast(21, 19, 400, isNight = true)
             )
         )
     }

@@ -159,7 +159,10 @@ fun HomeScreenContent(
                         onCityClick = { isSearchOpen = true }
                     )
 
-                    HourlyForecastRow(hourlyList = weather.hourlyForecast)
+                    HourlyForecastRow(
+                        hourlyList = weather.hourlyForecast,
+                        currentCityHour = weather.currentCityHour
+                    )
 
                     WeatherMetricsRow(
                         weather = weather,

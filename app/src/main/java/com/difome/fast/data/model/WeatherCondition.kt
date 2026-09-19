@@ -5,10 +5,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dehaze
-import androidx.compose.material.icons.filled.Grain
-import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Thunderstorm
-import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbCloudy
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -16,20 +13,20 @@ import com.difome.fast.R
 
 object WeatherConditionHelper {
 
-    fun getIcon(code: Int, hour: Int = 12): ImageVector {
-        val isNight = hour < 6 || hour >= 21
+    fun getIcon(code: Int): ImageVector {
+        val thunderCodes = setOf(140, 141, 142, 240, 241, 242, 340, 341, 342, 440, 441, 442)
+        val rainCodes = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330, 410, 420, 430)
+        val snowCodes = setOf(112, 122, 132, 212, 222, 232, 312, 322, 332, 412, 422, 432)
 
-        return when {
-            code == 0 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
-            code in 100..199 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbCloudy
-            code in 200..299 -> if (isNight) Icons.Default.Cloud else Icons.Default.WbCloudy
-            code in setOf(110, 120, 130, 210, 220, 230, 310, 320, 330, 420) -> Icons.Default.WaterDrop
-            code in setOf(111, 121, 131, 211, 221, 231, 311, 321, 331, 410, 430) -> Icons.Default.Grain
-            code in setOf(112, 122, 132, 212, 222, 232, 312, 322, 332) -> Icons.Default.AcUnit
-            code in setOf(140, 141, 142, 240, 241, 242, 440) -> Icons.Default.Thunderstorm
-            code in 300..499 -> Icons.Default.Cloud
-            code in 600..699 -> Icons.Default.Dehaze
-            else -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
+        return when (code) {
+            0 -> Icons.Default.WbSunny
+            in thunderCodes -> Icons.Default.Thunderstorm
+            in rainCodes -> Icons.Default.Thunderstorm
+            in snowCodes -> Icons.Default.AcUnit
+            in 100..309 -> Icons.Default.WbCloudy
+            in 400..409 -> Icons.Default.Cloud
+            in 600..699 -> Icons.Default.Dehaze
+            else -> Icons.Default.WbSunny
         }
     }
 
@@ -74,9 +71,6 @@ object WeatherConditionHelper {
             330 -> R.string.condition_330
             331 -> R.string.condition_331
             332 -> R.string.condition_332
-            340 -> R.string.condition_340
-            341 -> R.string.condition_341
-            342 -> R.string.condition_342
             400 -> R.string.condition_400
             410 -> R.string.condition_410
             411 -> R.string.condition_411

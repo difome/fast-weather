@@ -1,7 +1,9 @@
 package com.difome.fast.ui.home.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,9 +22,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,88 +52,110 @@ fun WeatherHeroCard(
     val displayMax = if (isFahrenheit) UnitConverter.toFahrenheit(weather.maxTemp) else weather.maxTemp
     val unitSymbol = if (isFahrenheit) "°F" else "°C"
 
+    val cardGradient = if (weather.isNight) {
+        Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF1E1B4B),
+                Color(0xFF312E81)
+            )
+        )
+    } else {
+        Brush.linearGradient(
+            colors = listOf(
+                Color(0xFF2563EB),
+                Color(0xFF3B82F6)
+            )
+        )
+    }
+
     ElevatedCard(
         modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = Color.Transparent
         )
     ) {
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
+                .background(cardGradient)
                 .padding(24.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .clip(RoundedCornerShape(8.dp))
-                    .clickable { onCityClick() }
-                    .padding(horizontal = 4.dp, vertical = 2.dp)
+            Column(
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.LocationOn,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Spacer(modifier = Modifier.width(4.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onCityClick() }
+                        .padding(horizontal = 4.dp, vertical = 2.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = weather.city,
+                        style = MaterialTheme.typography.titleLarge,
+                        color = Color.White
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowDropDown,
+                        contentDescription = null,
+                        tint = Color.White
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${displayTemp}$unitSymbol",
+                        style = MaterialTheme.typography.displayLarge,
+                        color = Color.White
+                    )
+
+                    Spacer(modifier = Modifier.width(24.dp))
+
+                    Icon(
+                        imageVector = WeatherConditionHelper.getIcon(weather.conditionCode),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp),
+                        tint = WeatherSunYellow
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
                 Text(
-                    text = weather.city,
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "${displayTemp}$unitSymbol",
-                    style = MaterialTheme.typography.displayLarge,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    text = stringResource(id = WeatherConditionHelper.getTitleRes(weather.conditionCode)),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.White.copy(alpha = 0.9f)
                 )
 
-                Spacer(modifier = Modifier.width(24.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                Icon(
-                    imageVector = WeatherConditionHelper.getIcon(weather.conditionCode, Calendar.getInstance().get(
-                        Calendar.HOUR_OF_DAY)),
-                    contentDescription = null,
-                    modifier = Modifier.size(48.dp),
-                    tint = WeatherSunYellow
-                )
-            }
-
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = stringResource(id = WeatherConditionHelper.getTitleRes(weather.conditionCode)),
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-            )
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.feels_like, displayFeelsLike),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-                Text(
-                    text = "${displayMin}°/${displayMax}°",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.feels_like, displayFeelsLike),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                    Text(
+                        text = "${displayMin}°/${displayMax}°",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.White.copy(alpha = 0.9f)
+                    )
+                }
             }
         }
     }
@@ -140,12 +167,13 @@ fun WeatherHeroCardPreview() {
     MyFastTheme {
         WeatherHeroCard(
             weather = WeatherUI(
-                city = "Krasnodar",
+                city = "Kyiv",
                 temp = 24,
                 feelsLike = 25,
                 minTemp = 18,
                 maxTemp = 28,
-                conditionCode = 0
+                conditionCode = 0,
+                isNight = false
             ),
             onCityClick = {}
         )
