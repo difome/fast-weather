@@ -3,9 +3,11 @@ package com.difome.fast.ui.home
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.difome.fast.common.AppConstants
 import com.difome.fast.data.local.CityPreferences
 import com.difome.fast.data.local.SettingsPreferences
 import com.difome.fast.data.model.LocationSuggestion
+import com.difome.fast.data.repository.getSinoptikLanguage
 import com.difome.fast.data.repository.loadWeather
 import com.difome.fast.data.repository.searchLocations
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +22,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val cityPreferences = CityPreferences(application)
     private val settingsPreferences = SettingsPreferences(application)
-    private var currentLocationId: String = "krasnodar"
+    private var currentLocationId: String = AppConstants.defaultCityId
+    private var lastFetchedLang: String = ""
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
@@ -46,19 +49,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun fetchWeather(locationId: String = currentLocationId, forceReload: Boolean = false) {
+        val currentLang = getSinoptikLanguage()
         val isSameCity = currentLocationId == locationId
+        val isSameLang = lastFetchedLang == currentLang
         val hasData = _uiState.value is HomeUiState.Success
 
-        if (!forceReload && isSameCity && hasData) {
+        if (!forceReload && isSameCity && isSameLang && hasData) {
             return
         }
 
         currentLocationId = locationId
+        lastFetchedLang = currentLang
         _searchSuggestions.value = emptyList()
 
         viewModelScope.launch {
             cityPreferences.saveSelectedCity(locationId)
-            if (!hasData) {
+            if (!hasData || !isSameLang) {
                 _uiState.value = HomeUiState.Loading
             }
             try {

@@ -13,7 +13,7 @@ import java.net.URL
 import java.util.Calendar
 import java.util.Locale
 
-suspend fun loadWeather(locationId: String = "krasnodar"): WeatherUI = withContext(Dispatchers.IO) {
+suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): WeatherUI = withContext(Dispatchers.IO) {
     val connection = URL("${AppConstants.WEATHER_URL}/api/weather/location/forecast/by_id")
         .openConnection() as HttpURLConnection
     val currentLang = getSinoptikLanguage()
@@ -157,7 +157,7 @@ suspend fun searchLocations(query: String): List<LocationSuggestion> = withConte
     resultList
 }
 
-private fun getSinoptikLanguage(): String {
+internal fun getSinoptikLanguage(): String {
     val appLocale = AppCompatDelegate.getApplicationLocales().get(0)
     val lang = if (appLocale != null && !appLocale.language.isNullOrEmpty()) {
         appLocale.language
