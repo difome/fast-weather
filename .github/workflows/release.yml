@@ -3,7 +3,6 @@ name: Build & Publish Release APK
 on:
   push:
     branches:
-      - main
       - master
   workflow_dispatch:
 
