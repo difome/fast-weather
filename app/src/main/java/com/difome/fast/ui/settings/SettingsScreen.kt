@@ -201,9 +201,9 @@ fun SettingsScreenContent(
             shape = RoundedCornerShape(16.dp)
         ) {
             val currentLangDisplay = when (currentAppLocale) {
-                "uk" -> "Українська 🇺🇦"
-                "ru" -> "Русский 🇷🇺"
-                "en" -> "English 🇬🇧"
+                "uk" -> "Українська"
+                "ru" -> "Русский"
+                "en" -> "English"
                 else -> stringResource(id = R.string.system_default)
             }
 
@@ -250,9 +250,9 @@ fun LanguageSelectionDialog(
 ) {
     val options = listOf(
         "" to stringResource(id = R.string.system_default),
-        "uk" to "Українська 🇺🇦",
-        "ru" to "Русский 🇷🇺",
-        "en" to "English 🇬🇧"
+        "uk" to "Українська ",
+        "ru" to "Русский",
+        "en" to "English"
     )
 
     AlertDialog(
