@@ -10,6 +10,7 @@ import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.repository.getSinoptikLanguage
 import com.difome.fast.data.repository.loadWeather
 import com.difome.fast.data.repository.searchLocations
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -64,11 +65,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
         viewModelScope.launch {
             cityPreferences.saveSelectedCity(locationId)
-            if (!hasData || !isSameLang) {
-                _uiState.value = HomeUiState.Loading
-            }
+            _uiState.value = HomeUiState.Loading
             try {
+                val startTime = System.currentTimeMillis()
                 val weather = loadWeather(currentLocationId)
+                val elapsedTime = System.currentTimeMillis() - startTime
+                if (elapsedTime < 500) {
+                    delay(500 - elapsedTime)
+                }
                 _uiState.value = HomeUiState.Success(weather)
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Err")

@@ -13,6 +13,7 @@
     <string name="forecast_title">24-hour forecast</string>
     <string name="search_city_title">Search city</string>
     <string name="search_city_placeholder">Enter city name...</string>
+    <string name="weather_updated">Weather updated</string>
     <string name="now">Now</string>
     <string name="units_section_title">Units of measurement</string>
     <string name="temp_unit_title">Temperature units</string>

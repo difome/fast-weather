@@ -13,6 +13,7 @@
     <string name="forecast_title">24-часовой прогноз</string>
     <string name="search_city_title">Поиск города</string>
     <string name="search_city_placeholder">Введите название города...</string>
+    <string name="weather_updated">Погода обновлена</string>
     <string name="now">Сейчас</string>
     <string name="units_section_title">Единицы измерения</string>
     <string name="temp_unit_title">Единицы температуры</string>
