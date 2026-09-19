@@ -76,11 +76,12 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
     if (hoursArray != null) {
         for (i in 0 until hoursArray.length()) {
             val item = hoursArray.getJSONObject(i)
+            val condCode = item.optInt("condition", item.optInt("weather", item.optInt("code", 0)))
             hourlyList.add(
                 HourForecast(
                     hour = item.getInt("hour"),
                     temp = item.getInt("temp"),
-                    conditionCode = item.optInt("condition", 0)
+                    conditionCode = condCode
                 )
             )
         }
@@ -91,7 +92,7 @@ suspend fun loadWeather(locationId: String = AppConstants.defaultCityId): Weathe
         feelsLike = now.getInt("temp_feels"),
         minTemp = temp.getInt("min"),
         maxTemp = temp.getInt("max"),
-        conditionCode = now.optInt("condition", 0),
+        conditionCode = now.optInt("condition", now.optInt("weather", now.optInt("code", 0))),
         humidity = humidity,
         windSpeed = windSpeed,
         verbalSummary = verbalSummary,

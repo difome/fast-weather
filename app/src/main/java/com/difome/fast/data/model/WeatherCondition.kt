@@ -2,10 +2,13 @@ package com.difome.fast.data.model
 
 import androidx.annotation.StringRes
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AcUnit
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dehaze
 import androidx.compose.material.icons.filled.Grain
+import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Thunderstorm
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbCloudy
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -13,18 +16,20 @@ import com.difome.fast.R
 
 object WeatherConditionHelper {
 
-    fun getIcon(code: Int): ImageVector {
-        return when (code ){
-             0 -> Icons.Default.WbSunny
-             in 100..199 -> Icons.Default.WbCloudy
-             in 200..299 -> Icons.Default.Cloud
-             in 300..399 -> Icons.Default.Cloud
-             in 400..409 -> Icons.Default.Cloud
-             in 410..439 -> Icons.Default.Grain
-             in 440..499 -> Icons.Default.Thunderstorm
-             in 500..599 -> Icons.Default.WbCloudy
-             in 600..699 -> Icons.Default.Dehaze
-            else -> Icons.Default.WbSunny
+    fun getIcon(code: Int, hour: Int = 12): ImageVector {
+        val isNight = hour < 6 || hour >= 21
+
+        return when {
+            code == 0 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
+            code in 100..199 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbCloudy
+            code in 200..299 -> if (isNight) Icons.Default.Cloud else Icons.Default.WbCloudy
+            code in setOf(110, 120, 130, 210, 220, 230, 310, 320, 330, 420) -> Icons.Default.WaterDrop
+            code in setOf(111, 121, 131, 211, 221, 231, 311, 321, 331, 410, 430) -> Icons.Default.Grain
+            code in setOf(112, 122, 132, 212, 222, 232, 312, 322, 332) -> Icons.Default.AcUnit
+            code in setOf(140, 141, 142, 240, 241, 242, 440) -> Icons.Default.Thunderstorm
+            code in 300..499 -> Icons.Default.Cloud
+            code in 600..699 -> Icons.Default.Dehaze
+            else -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
         }
     }
 

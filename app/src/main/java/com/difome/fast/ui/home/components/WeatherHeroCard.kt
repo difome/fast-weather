@@ -32,6 +32,7 @@ import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
 import com.difome.fast.ui.theme.WeatherSunYellow
+import java.util.Calendar
 
 @Composable
 fun WeatherHeroCard(
@@ -98,7 +99,8 @@ fun WeatherHeroCard(
                 Spacer(modifier = Modifier.width(24.dp))
 
                 Icon(
-                    imageVector = WeatherConditionHelper.getIcon(weather.conditionCode),
+                    imageVector = WeatherConditionHelper.getIcon(weather.conditionCode, Calendar.getInstance().get(
+                        Calendar.HOUR_OF_DAY)),
                     contentDescription = null,
                     modifier = Modifier.size(48.dp),
                     tint = WeatherSunYellow

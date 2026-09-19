@@ -64,7 +64,7 @@ fun HourlyForecastRow(
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = stringResource(id = R.string.forecast_title),
+                    text = stringResource(id = R.string.hourly_forecast_title),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold
                 )
@@ -146,7 +146,7 @@ fun HourlyForecastRow(
                             Spacer(modifier = Modifier.height(2.dp))
 
                             Icon(
-                                imageVector = WeatherConditionHelper.getIcon(item.conditionCode),
+                                imageVector = WeatherConditionHelper.getIcon(item.conditionCode, item.hour),
                                 contentDescription = null,
                                 modifier = Modifier.size(22.dp),
                                 tint = WeatherSunYellow

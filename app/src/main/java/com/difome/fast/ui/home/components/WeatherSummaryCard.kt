@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.difome.fast.R
@@ -31,8 +32,9 @@ fun WeatherSummaryCard(
                 modifier = Modifier.padding(16.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.forecast_title),
-                    style = MaterialTheme.typography.titleMedium
+                    text = stringResource(id = R.string.day_summary_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
