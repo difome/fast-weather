@@ -18,9 +18,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
@@ -128,56 +130,104 @@ fun SettingsScreenContent(
 
         Text(
             text = stringResource(id = R.string.units_section_title),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            Column {
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.temp_unit_title)) },
+                    trailingContent = {
+                        Text(
+                            text = if (isFahrenheit) stringResource(id = R.string.unit_fahrenheit) else stringResource(id = R.string.unit_celsius),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    modifier = Modifier.clickable { onToggleFahrenheit() }
+                )
 
-        SettingClickableRow(
-            title = stringResource(id = R.string.temp_unit_title),
-            valueText = if (isFahrenheit) stringResource(id = R.string.unit_fahrenheit) else stringResource(id = R.string.unit_celsius),
-            onClick = onToggleFahrenheit
-        )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
-        SettingClickableRow(
-            title = stringResource(id = R.string.wind_unit_title),
-            valueText = if (windUnit == "kmh") stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
-            onClick = onToggleWindUnit
-        )
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.wind_unit_title)) },
+                    trailingContent = {
+                        Text(
+                            text = if (windUnit == "kmh") stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    modifier = Modifier.clickable { onToggleWindUnit() }
+                )
 
-        SettingClickableRow(
-            title = stringResource(id = R.string.pressure_unit_title),
-            valueText = if (pressureUnit == "mmhg") stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
-            onClick = onTogglePressureUnit
-        )
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
 
-        Spacer(modifier = Modifier.height(16.dp))
-        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
-        Spacer(modifier = Modifier.height(16.dp))
+                ListItem(
+                    headlineContent = { Text(stringResource(id = R.string.pressure_unit_title)) },
+                    trailingContent = {
+                        Text(
+                            text = if (pressureUnit == "mmhg") stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                    },
+                    modifier = Modifier.clickable { onTogglePressureUnit() }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
             text = stringResource(id = R.string.other_section_title),
-            style = MaterialTheme.typography.labelMedium,
+            style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.primary,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        ElevatedCard(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp)
+        ) {
+            val currentLangDisplay = when (currentAppLocale) {
+                "uk" -> "Українська 🇺🇦"
+                "ru" -> "Русский 🇷🇺"
+                "en" -> "English 🇬🇧"
+                else -> stringResource(id = R.string.system_default)
+            }
 
-        val currentLangDisplay = when (currentAppLocale) {
-            "uk" -> "Українська 🇺🇦"
-            "ru" -> "Русский 🇷🇺"
-            "en" -> "English 🇬🇧"
-            else -> stringResource(id = R.string.system_default)
+            ListItem(
+                headlineContent = { Text(stringResource(id = R.string.language_setting_title)) },
+                trailingContent = {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = currentLangDisplay,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Icon(
+                            imageVector = Icons.Default.ChevronRight,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                },
+                modifier = Modifier.clickable { isLanguageDialogOpen = true }
+            )
         }
-
-        SettingClickableRow(
-            title = stringResource(id = R.string.language_setting_title),
-            valueText = currentLangDisplay,
-            onClick = { isLanguageDialogOpen = true }
-        )
     }
 
     if (isLanguageDialogOpen) {
@@ -189,50 +239,6 @@ fun SettingsScreenContent(
             },
             onDismiss = { isLanguageDialogOpen = false }
         )
-    }
-}
-
-@Composable
-fun SettingClickableRow(
-    title: String,
-    valueText: String,
-    onClick: () -> Unit
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(12.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 14.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.weight(1f)
-            )
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = valueText,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Icon(
-                    imageVector = Icons.Default.ChevronRight,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-        }
     }
 }
 
@@ -295,7 +301,7 @@ private fun setAppLanguage(languageTag: String) {
     AppCompatDelegate.setApplicationLocales(appLocales)
 }
 
-@Preview(showBackground = true, name = "Settings Screen Preview")
+@Preview(showBackground = true, name = "Settings Screen Preview", heightDp = 700)
 @Composable
 fun SettingsScreenPreview() {
     MyFastTheme {

@@ -3,21 +3,25 @@ package com.difome.fast.ui.home
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -37,18 +41,13 @@ import com.difome.fast.ui.theme.MyFastTheme
 fun HomeScreen(
     name: String,
     modifier: Modifier = Modifier,
+    onSettingsClick: () -> Unit = {},
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val isFahrenheit by viewModel.isFahrenheit.collectAsStateWithLifecycle()
     val windUnit by viewModel.windUnit.collectAsStateWithLifecycle()
-
-    val currentLocale = LocalConfiguration.current.locales.get(0)
-
-    LaunchedEffect(currentLocale) {
-        viewModel.fetchWeather()
-    }
 
     HomeScreenContent(
         name = name,
@@ -57,7 +56,8 @@ fun HomeScreen(
         windUnit = windUnit,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = { viewModel.searchCities(it) },
-        onCitySelected = { viewModel.fetchWeather(it) },
+        onCitySelected = { viewModel.fetchWeather(it, forceReload = true) },
+        onSettingsClick = onSettingsClick,
         modifier = modifier
     )
 }
@@ -71,7 +71,8 @@ fun HomeScreenContent(
     windUnit: String = "ms",
     searchSuggestions: List<LocationSuggestion> = emptyList(),
     onSearchQueryChange: (String) -> Unit = {},
-    onCitySelected: (String) -> Unit = {}
+    onCitySelected: (String) -> Unit = {},
+    onSettingsClick: () -> Unit = {}
 ) {
     var isSearchOpen by rememberSaveable { mutableStateOf(false) }
     var searchQuery by rememberSaveable { mutableStateOf("") }
@@ -88,10 +89,24 @@ fun HomeScreenContent(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text(
-            text = stringResource(id = R.string.welcome_message, name),
-            style = MaterialTheme.typography.headlineSmall
-        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.welcome_message, name),
+                style = MaterialTheme.typography.headlineSmall
+            )
+
+            IconButton(onClick = onSettingsClick) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = stringResource(id = R.string.settings_title),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
+            }
+        }
 
         when (uiState) {
             is HomeUiState.Loading -> {
@@ -108,23 +123,20 @@ fun HomeScreenContent(
             is HomeUiState.Success -> {
                 val weather = uiState.weather
 
-                // 1. Главная синяя карточка погоды
                 WeatherHeroCard(
                     weather = weather,
                     isFahrenheit = isFahrenheit,
                     onCityClick = { isSearchOpen = true }
                 )
 
-                // 2. Карточки показателей (Влажность + Ветер)
+                HourlyForecastRow(hourlyList = weather.hourlyForecast)
+
                 WeatherMetricsRow(
                     weather = weather,
                     windUnit = windUnit
                 )
 
-                // 3. Карточка текстового прогноза
                 WeatherSummaryCard(summaryText = weather.verbalSummary)
-
-                HourlyForecastRow(hourlyList = weather.hourlyForecast)
             }
 
             is HomeUiState.Error -> {
@@ -136,7 +148,6 @@ fun HomeScreenContent(
         }
     }
 
-    // 4. Окно поиска города
     CitySearchDialog(
         isOpen = isSearchOpen,
         searchQuery = searchQuery,

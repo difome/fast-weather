@@ -37,7 +37,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         viewModelScope.launch {
             val savedCityId = cityPreferences.selectedCityId.first()
-            fetchWeather(savedCityId)
+            fetchWeather(locationId = savedCityId, forceReload = true)
         }
     }
 
@@ -45,12 +45,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _searchSuggestions.value = emptyList()
     }
 
-    fun fetchWeather(locationId: String = currentLocationId) {
+    fun fetchWeather(locationId: String = currentLocationId, forceReload: Boolean = false) {
+        val isSameCity = currentLocationId == locationId
+        val hasData = _uiState.value is HomeUiState.Success
+
+        if (!forceReload && isSameCity && hasData) {
+            return
+        }
+
         currentLocationId = locationId
         _searchSuggestions.value = emptyList()
+
         viewModelScope.launch {
             cityPreferences.saveSelectedCity(locationId)
-            _uiState.value = HomeUiState.Loading
+            if (!hasData) {
+                _uiState.value = HomeUiState.Loading
+            }
             try {
                 val weather = loadWeather(currentLocationId)
                 _uiState.value = HomeUiState.Success(weather)

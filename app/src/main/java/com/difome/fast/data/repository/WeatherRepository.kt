@@ -159,9 +159,13 @@ suspend fun searchLocations(query: String): List<LocationSuggestion> = withConte
 
 private fun getSinoptikLanguage(): String {
     val appLocale = AppCompatDelegate.getApplicationLocales().get(0)
-        ?: Locale.getDefault()
+    val lang = if (appLocale != null && !appLocale.language.isNullOrEmpty()) {
+        appLocale.language
+    } else {
+        Locale.getDefault().language
+    }
 
-    return when (appLocale.language) {
+    return when (lang) {
         "ru" -> "rus"
         "en" -> "eng"
         "uk" -> "ukr"
