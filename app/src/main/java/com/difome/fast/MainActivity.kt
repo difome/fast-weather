@@ -20,6 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import com.difome.fast.common.AppConstants
 import com.difome.fast.data.local.SettingsPreferences
 import com.difome.fast.ui.home.HomeScreen
+import com.difome.fast.ui.navigation.HomeRoute
+import com.difome.fast.ui.navigation.SettingsRoute
 import com.difome.fast.ui.settings.SettingsScreen
 import com.difome.fast.ui.theme.MyFastTheme
 
@@ -43,16 +45,16 @@ class MainActivity : AppCompatActivity() {
                 ) { innerPadding ->
                     NavHost(
                         navController = navController,
-                        startDestination = "home",
+                        startDestination = HomeRoute,
                         modifier = Modifier.padding(innerPadding)
                     ) {
-                        composable("home") {
+                        composable<HomeRoute> {
                             HomeScreen(
                                 name = "FastWeather",
-                                onSettingsClick = { navController.navigate("settings") }
+                                onSettingsClick = { navController.navigate(SettingsRoute) }
                             )
                         }
-                        composable("settings") {
+                        composable<SettingsRoute> {
                             SettingsScreen(navController)
                         }
                     }

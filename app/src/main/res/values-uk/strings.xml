@@ -4,7 +4,7 @@
     <string name="settings_title">Налаштування</string>
     <string name="back_button">Назад</string>
     <string name="loading">Завантаження...</string>
-    <string name="feels_like">Відчувається як %1$d°C</string>
+    <string name="feels_like">Відчувається як %1$d°</string>
     <string name="temp_min_max">мін %1$d° / макс %2$d°</string>
     <string name="humidity">Вологість</string>
     <string name="wind">Вітер</string>

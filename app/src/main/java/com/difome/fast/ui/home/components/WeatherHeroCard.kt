@@ -22,7 +22,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,14 +36,13 @@ import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
 import com.difome.fast.ui.theme.WeatherSunYellow
-import java.util.Calendar
 
 @Composable
 fun WeatherHeroCard(
+    modifier: Modifier = Modifier,
     weather: WeatherUI,
     isFahrenheit: Boolean = false,
-    onCityClick: () -> Unit,
-    modifier: Modifier = Modifier
+    onCityClick: () -> Unit
 ) {
     val displayTemp = if (isFahrenheit) UnitConverter.toFahrenheit(weather.temp) else weather.temp
     val displayFeelsLike = if (isFahrenheit) UnitConverter.toFahrenheit(weather.feelsLike) else weather.feelsLike
@@ -116,7 +114,7 @@ fun WeatherHeroCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${displayTemp}$unitSymbol",
+                        text = "$displayTemp$unitSymbol",
                         style = MaterialTheme.typography.displayLarge,
                         color = Color.White
                     )

@@ -161,6 +161,7 @@ fun HomeScreenContent(
 
                     HourlyForecastRow(
                         hourlyList = weather.hourlyForecast,
+                        isFahrenheit = isFahrenheit,
                         currentCityHour = weather.currentCityHour
                     )
 

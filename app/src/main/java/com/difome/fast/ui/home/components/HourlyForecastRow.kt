@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.difome.fast.R
+import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.HourForecast
 import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.ui.theme.MyFastTheme
@@ -41,18 +42,25 @@ import java.util.Locale
 
 @Composable
 fun HourlyForecastRow(
+    modifier: Modifier = Modifier,
     hourlyList: List<HourForecast>,
+    isFahrenheit: Boolean = false,
     currentCityHour: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
-    modifier: Modifier = Modifier
 ) {
     if (hourlyList.isNotEmpty()) {
         val listState = rememberLazyListState()
 
-        val minTemp = hourlyList.minOf { it.temp }
-        val maxTemp = hourlyList.maxOf { it.temp }
+        val convertedList = if (isFahrenheit) {
+            hourlyList.map { it.copy(temp = UnitConverter.toFahrenheit(it.temp)) }
+        } else {
+            hourlyList
+        }
+
+        val minTemp = convertedList.minOf { it.temp }
+        val maxTemp = convertedList.maxOf { it.temp }
         val tempRange = (maxTemp - minTemp).coerceAtLeast(1)
 
-        val currentIndex = hourlyList.indexOfFirst { it.hour == currentCityHour }.coerceAtLeast(0)
+        val currentIndex = convertedList.indexOfFirst { it.hour == currentCityHour }.coerceAtLeast(0)
 
         LaunchedEffect(currentIndex) {
             listState.scrollToItem(currentIndex)
@@ -75,7 +83,7 @@ fun HourlyForecastRow(
                     state = listState,
                     horizontalArrangement = Arrangement.spacedBy(0.dp)
                 ) {
-                    itemsIndexed(hourlyList, key = { _, item -> item.hour }) { index, item ->
+                    itemsIndexed(convertedList, key = { _, item -> item.hour }) { index, item ->
                         val isNow = item.hour == currentCityHour
                         val timeLabel = if (isNow) {
                             stringResource(id = R.string.now)
@@ -83,9 +91,9 @@ fun HourlyForecastRow(
                             String.format(Locale.US, "%02d:00", item.hour)
                         }
 
-                        val prevTemp = hourlyList.getOrNull(index - 1)?.temp ?: item.temp
+                        val prevTemp = convertedList.getOrNull(index - 1)?.temp ?: item.temp
                         val currentTemp = item.temp
-                        val nextTemp = hourlyList.getOrNull(index + 1)?.temp ?: item.temp
+                        val nextTemp = convertedList.getOrNull(index + 1)?.temp ?: item.temp
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
