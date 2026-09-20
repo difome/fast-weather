@@ -2,8 +2,10 @@ package com.difome.fast.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import com.difome.fast.common.AppConstants
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +41,7 @@ import com.difome.fast.R
 import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.home.components.CitySearchDialog
+import com.difome.fast.ui.home.components.DailyForecastCard
 import com.difome.fast.ui.home.components.HourlyForecastRow
 import com.difome.fast.ui.home.components.WeatherHeroCard
 import com.difome.fast.ui.home.components.WeatherMetricsRow
@@ -50,12 +53,14 @@ fun HomeScreen(
     name: String,
     modifier: Modifier = Modifier,
     onSettingsClick: () -> Unit = {},
+    onDailyForecastClick: () -> Unit = {},
     viewModel: HomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val searchSuggestions by viewModel.searchSuggestions.collectAsStateWithLifecycle()
     val isFahrenheit by viewModel.isFahrenheit.collectAsStateWithLifecycle()
     val windUnit by viewModel.windUnit.collectAsStateWithLifecycle()
+    val pressureUnit by viewModel.pressureUnit.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.fetchWeather()
@@ -66,10 +71,12 @@ fun HomeScreen(
         uiState = uiState,
         isFahrenheit = isFahrenheit,
         windUnit = windUnit,
+        pressureUnit = pressureUnit,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = { viewModel.searchCities(it) },
         onCitySelected = { viewModel.fetchWeather(it, forceReload = true) },
         onSettingsClick = onSettingsClick,
+        onDailyForecastClick = onDailyForecastClick,
         onRefresh = { viewModel.fetchWeather(forceReload = true) },
         modifier = modifier
     )
@@ -82,11 +89,13 @@ fun HomeScreenContent(
     name: String,
     uiState: HomeUiState,
     isFahrenheit: Boolean = false,
-    windUnit: String = "ms",
+    windUnit: String = AppConstants.WIND_UNIT_MS,
+    pressureUnit: String = AppConstants.PRESSURE_UNIT_MBAR,
     searchSuggestions: List<LocationSuggestion> = emptyList(),
     onSearchQueryChange: (String) -> Unit = {},
     onCitySelected: (String) -> Unit = {},
     onSettingsClick: () -> Unit = {},
+    onDailyForecastClick: () -> Unit = {},
     onRefresh: () -> Unit = {}
 ) {
     var isSearchOpen by rememberSaveable { mutableStateOf(false) }
@@ -165,9 +174,16 @@ fun HomeScreenContent(
                         currentCityHour = weather.currentCityHour
                     )
 
+                    DailyForecastCard(
+                        dailyList = weather.dailyForecast,
+                        isFahrenheit = isFahrenheit,
+                        onMoreClick = onDailyForecastClick
+                    )
+
                     WeatherMetricsRow(
                         weather = weather,
-                        windUnit = windUnit
+                        windUnit = windUnit,
+                        pressureUnit = pressureUnit
                     )
 
                     WeatherSummaryCard(summaryText = weather.verbalSummary)
@@ -181,10 +197,26 @@ fun HomeScreenContent(
                         CircularProgressIndicator()
                     }
                 } else if (uiState is HomeUiState.Error) {
-                    Text(
-                        text = stringResource(id = R.string.error_loading),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.error_loading),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                        if (uiState.message.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = uiState.message,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
                 }
             }
         }

@@ -7,3 +7,6 @@ data object HomeRoute
 
 @Serializable
 data object SettingsRoute
+
+@Serializable
+data object DailyForecastRoute

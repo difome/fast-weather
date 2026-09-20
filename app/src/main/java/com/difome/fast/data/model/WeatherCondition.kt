@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Dehaze
 import androidx.compose.material.icons.filled.NightsStay
 import androidx.compose.material.icons.filled.Thunderstorm
+import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.WbCloudy
 import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -21,7 +22,7 @@ object WeatherConditionHelper {
 
         return when (code) {
             in thunderCodes -> Icons.Default.Thunderstorm
-            in rainCodes -> Icons.Default.Thunderstorm
+            in rainCodes -> Icons.Default.WaterDrop
             in snowCodes -> Icons.Default.AcUnit
             in 400..409 -> Icons.Default.Cloud
             in 600..699 -> Icons.Default.Dehaze

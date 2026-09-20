@@ -3,6 +3,7 @@ package com.difome.fast.ui.home.components
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,14 +14,19 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.outlined.Umbrella
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -42,18 +48,20 @@ import java.util.Locale
 
 @Composable
 fun HourlyForecastRow(
-    modifier: Modifier = Modifier,
     hourlyList: List<HourForecast>,
+    modifier: Modifier = Modifier,
     isFahrenheit: Boolean = false,
-    currentCityHour: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY),
+    currentCityHour: Int = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
 ) {
     if (hourlyList.isNotEmpty()) {
         val listState = rememberLazyListState()
 
-        val convertedList = if (isFahrenheit) {
-            hourlyList.map { it.copy(temp = UnitConverter.toFahrenheit(it.temp)) }
-        } else {
-            hourlyList
+        val convertedList = remember(hourlyList, isFahrenheit) {
+            if (isFahrenheit) {
+                hourlyList.map { it.copy(temp = UnitConverter.toFahrenheit(it.temp)) }
+            } else {
+                hourlyList
+            }
         }
 
         val minTemp = convertedList.minOf { it.temp }
@@ -97,7 +105,7 @@ fun HourlyForecastRow(
 
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.width(52.dp)
+                            modifier = Modifier.width(58.dp)
                         ) {
                             Text(
                                 text = "${item.temp}°",
@@ -109,7 +117,7 @@ fun HourlyForecastRow(
 
                             Canvas(
                                 modifier = Modifier
-                                    .width(52.dp)
+                                    .width(58.dp)
                                     .height(24.dp)
                             ) {
                                 val w = size.width
@@ -160,7 +168,48 @@ fun HourlyForecastRow(
                                 tint = if (item.isNight) Color(0xFFC7D2FE) else WeatherSunYellow
                             )
 
-                            Spacer(modifier = Modifier.height(4.dp))
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(1.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Umbrella,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(10.dp),
+                                    tint = if (item.precipProbability > 0) Color(0xFF38BDF8) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                )
+                                Text(
+                                    text = "${item.precipProbability}%",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = if (item.precipProbability > 0) Color(0xFF38BDF8) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                    fontWeight = if (item.precipProbability > 0) FontWeight.Bold else FontWeight.Normal
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(2.dp))
+
+                            if (item.windSpeed > 0.0 || item.windDirection.isNotEmpty()) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Navigation,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(11.dp)
+                                            .rotate(UnitConverter.windDirectionToDegrees(item.windDirection)),
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = "${item.windSpeed.toInt()}",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                            }
 
                             Text(
                                 text = timeLabel,
@@ -182,14 +231,14 @@ fun HourlyForecastRowPreview() {
     MyFastTheme {
         HourlyForecastRow(
             hourlyList = listOf(
-                HourForecast(0, 16, 0, isNight = true),
-                HourForecast(3, 15, 0, isNight = true),
-                HourForecast(6, 14, 0, isNight = false),
-                HourForecast(9, 18, 100, isNight = false),
-                HourForecast(12, 24, 0, isNight = false),
-                HourForecast(15, 27, 0, isNight = false),
-                HourForecast(18, 23, 200, isNight = false),
-                HourForecast(21, 19, 400, isNight = true)
+                HourForecast(0, 16, 0, isNight = true, windSpeed = 2.4, windDirection = "NE", precipProbability = 0),
+                HourForecast(3, 15, 0, isNight = true, windSpeed = 2.1, windDirection = "NE", precipProbability = 0),
+                HourForecast(6, 14, 0, isNight = false, windSpeed = 2.5, windDirection = "E", precipProbability = 0),
+                HourForecast(9, 18, 100, isNight = false, windSpeed = 2.5, windDirection = "E", precipProbability = 0),
+                HourForecast(12, 24, 0, isNight = false, windSpeed = 4.1, windDirection = "E", precipProbability = 0),
+                HourForecast(15, 27, 0, isNight = false, windSpeed = 3.1, windDirection = "E", precipProbability = 0),
+                HourForecast(18, 23, 200, isNight = false, windSpeed = 2.1, windDirection = "E", precipProbability = 17),
+                HourForecast(21, 19, 400, isNight = true, windSpeed = 1.9, windDirection = "NE", precipProbability = 0)
             )
         )
     }

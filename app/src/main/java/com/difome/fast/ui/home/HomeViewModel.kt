@@ -38,6 +38,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     val windUnit: StateFlow<String> = settingsPreferences.windUnit
         .stateIn(viewModelScope, SharingStarted.Eagerly, AppConstants.WIND_UNIT_MS)
 
+    val pressureUnit: StateFlow<String> = settingsPreferences.pressureUnit
+        .stateIn(viewModelScope, SharingStarted.Eagerly, AppConstants.PRESSURE_UNIT_MBAR)
+
     init {
         viewModelScope.launch {
             val savedCityId = cityPreferences.selectedCityId.first()

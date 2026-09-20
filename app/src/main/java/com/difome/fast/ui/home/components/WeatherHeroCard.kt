@@ -39,16 +39,16 @@ import com.difome.fast.ui.theme.WeatherSunYellow
 
 @Composable
 fun WeatherHeroCard(
-    modifier: Modifier = Modifier,
     weather: WeatherUI,
-    isFahrenheit: Boolean = false,
-    onCityClick: () -> Unit
+    onCityClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    isFahrenheit: Boolean = false
 ) {
     val displayTemp = if (isFahrenheit) UnitConverter.toFahrenheit(weather.temp) else weather.temp
     val displayFeelsLike = if (isFahrenheit) UnitConverter.toFahrenheit(weather.feelsLike) else weather.feelsLike
     val displayMin = if (isFahrenheit) UnitConverter.toFahrenheit(weather.minTemp) else weather.minTemp
     val displayMax = if (isFahrenheit) UnitConverter.toFahrenheit(weather.maxTemp) else weather.maxTemp
-    val unitSymbol = if (isFahrenheit) "°F" else "°C"
+    val unitSymbol = if (isFahrenheit) stringResource(id = R.string.unit_fahrenheit) else stringResource(id = R.string.unit_celsius)
 
     val cardGradient = if (weather.isNight) {
         Brush.linearGradient(

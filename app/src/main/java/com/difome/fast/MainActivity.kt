@@ -14,12 +14,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.difome.fast.common.AppConstants
 import com.difome.fast.data.local.SettingsPreferences
+import com.difome.fast.ui.home.DailyForecastDetailScreen
 import com.difome.fast.ui.home.HomeScreen
+import com.difome.fast.ui.home.HomeUiState
+import com.difome.fast.ui.home.HomeViewModel
+import com.difome.fast.ui.navigation.DailyForecastRoute
 import com.difome.fast.ui.navigation.HomeRoute
 import com.difome.fast.ui.navigation.SettingsRoute
 import com.difome.fast.ui.settings.SettingsScreen
@@ -36,6 +42,13 @@ class MainActivity : AppCompatActivity() {
             val isDynamicColor by settingsPrefs.isDynamicColor.collectAsState(initial = true)
             val navController = rememberNavController()
 
+            val homeViewModel: HomeViewModel = viewModel()
+            val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
+            val isFahrenheit by homeViewModel.isFahrenheit.collectAsStateWithLifecycle()
+            val windUnit by homeViewModel.windUnit.collectAsStateWithLifecycle()
+
+            val dailyForecast = (uiState as? HomeUiState.Success)?.weather?.dailyForecast ?: emptyList()
+
             MyFastTheme(
                 themeMode = themeMode,
                 dynamicColor = isDynamicColor
@@ -51,11 +64,21 @@ class MainActivity : AppCompatActivity() {
                         composable<HomeRoute> {
                             HomeScreen(
                                 name = "FastWeather",
-                                onSettingsClick = { navController.navigate(SettingsRoute) }
+                                onSettingsClick = { navController.navigate(SettingsRoute) },
+                                onDailyForecastClick = { navController.navigate(DailyForecastRoute) },
+                                viewModel = homeViewModel
                             )
                         }
                         composable<SettingsRoute> {
                             SettingsScreen(navController)
+                        }
+                        composable<DailyForecastRoute> {
+                            DailyForecastDetailScreen(
+                                dailyList = dailyForecast,
+                                isFahrenheit = isFahrenheit,
+                                windUnit = windUnit,
+                                onBackClick = { navController.popBackStack() }
+                            )
                         }
                     }
                 }

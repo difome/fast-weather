@@ -19,6 +19,7 @@ object AppConstants {
     const val WIND_UNIT_KMH = "kmh"
     const val PRESSURE_UNIT_MBAR = "mbar"
     const val PRESSURE_UNIT_MMHG = "mmhg"
+    const val DEFAULT_PRESSURE_PA = 101300
 
     const val THEME_SYSTEM = "system"
     const val THEME_LIGHT = "light"
@@ -42,10 +43,9 @@ object AppConstants {
             val appLanguage = AppCompatDelegate.getApplicationLocales().get(0)?.language
                 ?: Locale.getDefault().language
 
-            return when (appLanguage) {
-                LANG_UK -> DEFAULT_CITY_UK
-                LANG_EN -> DEFAULT_CITY_EN
-                LANG_RU -> DEFAULT_CITY_RU
+            return when {
+                appLanguage.startsWith(LANG_UK) -> DEFAULT_CITY_UK
+                appLanguage.startsWith(LANG_RU) -> DEFAULT_CITY_RU
                 else -> DEFAULT_CITY_EN
             }
         }
