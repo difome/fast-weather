@@ -50,8 +50,6 @@ fun WeatherMetricsRow(
 ) {
     val displayWind = if (windUnit == AppConstants.WIND_UNIT_KMH) UnitConverter.toKmH(weather.windSpeed) else weather.windSpeed
     val windUnitText = if (windUnit == AppConstants.WIND_UNIT_KMH) stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms)
-    val windDirRes = UnitConverter.getWindDirectionRes(weather.windDirection)
-    val windDirText = if (windDirRes != null) stringResource(id = windDirRes) else weather.windDirection
 
     val isMmHg = pressureUnit == AppConstants.PRESSURE_UNIT_MMHG
     val displayPressure = if (isMmHg) UnitConverter.toMmHg(weather.pressure) else UnitConverter.toMbar(weather.pressure)
@@ -113,7 +111,7 @@ fun WeatherMetricsRow(
                         }
                         val windValStr = String.format(Locale.US, "%.1f %s", displayWind, windUnitText)
                         Text(
-                            text = if (windDirText.isNotEmpty()) "$windValStr ($windDirText)" else windValStr,
+                            text = windValStr,
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -61,10 +62,6 @@ fun HomeScreen(
     val isFahrenheit by viewModel.isFahrenheit.collectAsStateWithLifecycle()
     val windUnit by viewModel.windUnit.collectAsStateWithLifecycle()
     val pressureUnit by viewModel.pressureUnit.collectAsStateWithLifecycle()
-
-    LaunchedEffect(Unit) {
-        viewModel.fetchWeather()
-    }
 
     HomeScreenContent(
         name = name,
@@ -190,11 +187,15 @@ fun HomeScreenContent(
                 } else if (uiState is HomeUiState.Loading) {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .height(200.dp),
+                            .fillMaxWidth()
+                            .padding(vertical = 48.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        CircularProgressIndicator()
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(48.dp)
+                        )
                     }
                 } else if (uiState is HomeUiState.Error) {
                     Column(

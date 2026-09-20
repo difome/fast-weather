@@ -33,7 +33,7 @@ import com.difome.fast.ui.theme.MyFastTheme
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -46,6 +46,10 @@ class MainActivity : AppCompatActivity() {
             val uiState by homeViewModel.uiState.collectAsStateWithLifecycle()
             val isFahrenheit by homeViewModel.isFahrenheit.collectAsStateWithLifecycle()
             val windUnit by homeViewModel.windUnit.collectAsStateWithLifecycle()
+
+            splashScreen.setKeepOnScreenCondition {
+                uiState is HomeUiState.Loading
+            }
 
             val dailyForecast = (uiState as? HomeUiState.Success)?.weather?.dailyForecast ?: emptyList()
 
