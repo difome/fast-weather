@@ -104,10 +104,6 @@ fun HomeScreenContent(
     var lastSuccessWeather by remember { mutableStateOf<WeatherUI?>(null) }
     val updatedMessage = stringResource(id = R.string.weather_updated)
 
-    if (uiState is HomeUiState.Success) {
-        lastSuccessWeather = uiState.weather
-    }
-
     val displayWeather = (uiState as? HomeUiState.Success)?.weather ?: lastSuccessWeather
 
     val dismissSearch = {
@@ -119,6 +115,9 @@ fun HomeScreenContent(
     val isRefreshing = isUserRefreshing
 
     LaunchedEffect(uiState) {
+        if (uiState is HomeUiState.Success) {
+            lastSuccessWeather = uiState.weather
+        }
         if (isUserRefreshing && uiState !is HomeUiState.Loading) {
             isUserRefreshing = false
             if (uiState is HomeUiState.Success) {

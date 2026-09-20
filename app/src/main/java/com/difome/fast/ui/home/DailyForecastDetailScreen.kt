@@ -184,6 +184,9 @@ fun DailyForecastDetailScreen(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         val outlineVariant = MaterialTheme.colorScheme.outlineVariant
+                        val pathMax = remember { Path() }
+                        val pathMin = remember { Path() }
+
                         Canvas(
                             modifier = Modifier
                                 .width(80.dp)
@@ -200,15 +203,13 @@ fun DailyForecastDetailScreen(
                             val yMinPrev = h * 0.85f - ((prevDay.minTemp - allMin).toFloat() / range) * (h * 0.3f)
                             val yMinNext = h * 0.85f - ((nextDay.minTemp - allMin).toFloat() / range) * (h * 0.3f)
 
-                            val pathMax = Path().apply {
-                                moveTo(0f, (yMaxPrev + yMaxCurr) / 2f)
-                                cubicTo(w * 0.5f, yMaxCurr, w * 0.5f, yMaxCurr, w, (yMaxCurr + yMaxNext) / 2f)
-                            }
+                            pathMax.reset()
+                            pathMax.moveTo(0f, (yMaxPrev + yMaxCurr) / 2f)
+                            pathMax.cubicTo(w * 0.5f, yMaxCurr, w * 0.5f, yMaxCurr, w, (yMaxCurr + yMaxNext) / 2f)
 
-                            val pathMin = Path().apply {
-                                moveTo(0f, (yMinPrev + yMinCurr) / 2f)
-                                cubicTo(w * 0.5f, yMinCurr, w * 0.5f, yMinCurr, w, (yMinCurr + yMinNext) / 2f)
-                            }
+                            pathMin.reset()
+                            pathMin.moveTo(0f, (yMinPrev + yMinCurr) / 2f)
+                            pathMin.cubicTo(w * 0.5f, yMinCurr, w * 0.5f, yMinCurr, w, (yMinCurr + yMinNext) / 2f)
 
                             drawPath(
                                 path = pathMax,

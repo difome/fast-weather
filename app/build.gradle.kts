@@ -51,7 +51,7 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             isDebuggable = true
-            resValue("string", "app_name", "FastWeather Debug")
+            resValue("string", "app_name", "Fast Weather Debug")
         }
 
         release {
@@ -61,7 +61,7 @@ android {
                 "proguard-rules.pro"
             )
             signingConfig = signingConfigs.getByName("release")
-            resValue("string", "app_name", "FastWeather")
+            resValue("string", "app_name", "Fast Weather")
         }
     }
 

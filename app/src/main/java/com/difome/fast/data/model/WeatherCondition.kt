@@ -8,18 +8,21 @@ import com.difome.fast.R
 
 object WeatherConditionHelper {
 
+    private val THUNDER_CODES = setOf(140, 141, 142, 240, 241, 242, 340, 341, 342, 440, 441, 442)
+    private val RAIN_SUN_CODES = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330)
+    private val RAIN_OVERCAST_CODES = setOf(410, 420, 430)
+    private val SNOW_CODES = setOf(
+        103, 111, 112, 121, 122, 131, 132, 211, 212, 221, 222, 231, 232,
+        311, 312, 321, 322, 331, 332, 411, 412, 421, 422, 431, 432
+    )
+
     @Composable
     fun getIcon(code: Int, isNight: Boolean = false): ImageVector {
-        val thunderCodes = setOf(140, 141, 142, 240, 241, 242, 340, 341, 342, 440, 441, 442)
-        val rainSunCodes = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330)
-        val rainOvercastCodes = setOf(410, 420, 430)
-        val snowCodes = setOf(103, 111, 112, 121, 122, 131, 132, 211, 212, 221, 222, 231, 232, 311, 312, 321, 322, 331, 332, 411, 412, 421, 422, 431, 432)
-
         return when (code) {
-            in thunderCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_thunder)
-            in rainSunCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain_sun)
-            in rainOvercastCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain)
-            in snowCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_snow)
+            in THUNDER_CODES -> ImageVector.vectorResource(id = R.drawable.ic_weather_thunder)
+            in RAIN_SUN_CODES -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain_sun)
+            in RAIN_OVERCAST_CODES -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain)
+            in SNOW_CODES -> ImageVector.vectorResource(id = R.drawable.ic_weather_snow)
             600 -> ImageVector.vectorResource(id = R.drawable.ic_weather_fog)
             in 400..409 -> ImageVector.vectorResource(id = R.drawable.ic_weather_cloud)
             in 100..399, 500 -> if (isNight) ImageVector.vectorResource(id = R.drawable.ic_weather_partly_cloudy_night) else ImageVector.vectorResource(id = R.drawable.ic_weather_partly_cloudy_day)

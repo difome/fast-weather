@@ -115,6 +115,8 @@ fun HourlyForecastRow(
 
                             Spacer(modifier = Modifier.height(2.dp))
 
+                            val linePath = remember { Path() }
+
                             Canvas(
                                 modifier = Modifier
                                     .width(58.dp)
@@ -130,14 +132,13 @@ fun HourlyForecastRow(
                                 val yLeft = (yPrev + yCurr) / 2f
                                 val yRight = (yCurr + yNext) / 2f
 
-                                val linePath = Path().apply {
-                                    moveTo(0f, yLeft)
-                                    cubicTo(
-                                        w * 0.5f, yCurr,
-                                        w * 0.5f, yCurr,
-                                        w, yRight
-                                    )
-                                }
+                                linePath.reset()
+                                linePath.moveTo(0f, yLeft)
+                                linePath.cubicTo(
+                                    w * 0.5f, yCurr,
+                                    w * 0.5f, yCurr,
+                                    w, yRight
+                                )
 
                                 drawPath(
                                     path = linePath,
