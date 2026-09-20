@@ -164,8 +164,8 @@ fun HourlyForecastRow(
                             Icon(
                                 imageVector = WeatherConditionHelper.getIcon(item.conditionCode, item.isNight),
                                 contentDescription = null,
-                                modifier = Modifier.size(22.dp),
-                                tint = if (item.isNight) Color(0xFFC7D2FE) else WeatherSunYellow
+                                modifier = Modifier.size(36.dp),
+                                tint = Color.Unspecified
                             )
 
                             Spacer(modifier = Modifier.height(2.dp))

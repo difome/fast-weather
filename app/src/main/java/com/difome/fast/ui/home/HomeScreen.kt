@@ -113,12 +113,14 @@ fun HomeScreenContent(
         searchQuery = ""
         onSearchQueryChange("")
     }
-    val isRefreshing = uiState is HomeUiState.Loading
+    val isRefreshing = isUserRefreshing && uiState is HomeUiState.Loading
 
     LaunchedEffect(uiState) {
-        if (isUserRefreshing && uiState is HomeUiState.Success) {
+        if (isUserRefreshing && uiState !is HomeUiState.Loading) {
             isUserRefreshing = false
-            snackbarHostState.showSnackbar(updatedMessage)
+            if (uiState is HomeUiState.Success) {
+                snackbarHostState.showSnackbar(updatedMessage)
+            }
         }
     }
 

@@ -35,7 +35,6 @@ import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.WeatherConditionHelper
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
-import com.difome.fast.ui.theme.WeatherSunYellow
 
 @Composable
 fun WeatherHeroCard(
@@ -124,8 +123,8 @@ fun WeatherHeroCard(
                     Icon(
                         imageVector = WeatherConditionHelper.getIcon(weather.conditionCode, weather.isNight),
                         contentDescription = null,
-                        modifier = Modifier.size(48.dp),
-                        tint = if (weather.isNight) Color(0xFFC7D2FE) else WeatherSunYellow
+                        modifier = Modifier.size(72.dp),
+                        tint = Color.Unspecified
                     )
                 }
 

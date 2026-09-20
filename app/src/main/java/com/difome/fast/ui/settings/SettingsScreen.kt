@@ -10,20 +10,28 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Compress
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -37,6 +45,8 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -69,7 +79,7 @@ fun SettingsScreen(navController: NavController) {
         try {
             val pInfo = context.packageManager.getPackageInfo(context.packageName, 0)
             pInfo.versionName ?: AppConstants.APP_VERSION
-        } catch (e: Exception) {
+        } catch (_: Exception) {
             AppConstants.APP_VERSION
         }
     }
@@ -118,24 +128,26 @@ fun SettingsScreenContent(
     themeMode: String,
     isDynamicColor: Boolean,
     currentAppLocale: String,
+    modifier: Modifier = Modifier,
     appVersion: String = AppConstants.APP_VERSION,
-    onBackClick: () -> Unit,
-    onToggleFahrenheit: () -> Unit,
-    onToggleWindUnit: () -> Unit,
-    onTogglePressureUnit: () -> Unit,
-    onThemeModeSelected: (String) -> Unit,
-    onToggleDynamicColor: () -> Unit,
-    onLanguageSelected: (String) -> Unit
+    onBackClick: () -> Unit = {},
+    onToggleFahrenheit: () -> Unit = {},
+    onToggleWindUnit: () -> Unit = {},
+    onTogglePressureUnit: () -> Unit = {},
+    onThemeModeSelected: (String) -> Unit = {},
+    onToggleDynamicColor: () -> Unit = {},
+    onLanguageSelected: (String) -> Unit = {}
 ) {
     var isLanguageDialogOpen by remember { mutableStateOf(false) }
     var isThemeDialogOpen by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
             .padding(16.dp)
     ) {
+        // Header
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth()
@@ -156,6 +168,7 @@ fun SettingsScreenContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Units Section
         Text(
             text = stringResource(id = R.string.units_section_title),
             style = MaterialTheme.typography.labelLarge,
@@ -164,58 +177,41 @@ fun SettingsScreenContent(
             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
         )
 
-        ElevatedCard(
+        OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(20.dp)
         ) {
             Column {
-                ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.temp_unit_title)) },
-                    trailingContent = {
-                        Text(
-                            text = if (isFahrenheit) stringResource(id = R.string.unit_fahrenheit) else stringResource(id = R.string.unit_celsius),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    modifier = Modifier.clickable { onToggleFahrenheit() }
+                SettingsItem(
+                    title = stringResource(id = R.string.temp_unit_title),
+                    value = if (isFahrenheit) stringResource(id = R.string.unit_fahrenheit) else stringResource(id = R.string.unit_celsius),
+                    icon = Icons.Default.Thermostat,
+                    onClick = onToggleFahrenheit
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
-                ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.wind_unit_title)) },
-                    trailingContent = {
-                        Text(
-                            text = if (windUnit == AppConstants.WIND_UNIT_KMH) stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    modifier = Modifier.clickable { onToggleWindUnit() }
+                SettingsItem(
+                    title = stringResource(id = R.string.wind_unit_title),
+                    value = if (windUnit == AppConstants.WIND_UNIT_KMH) stringResource(id = R.string.unit_kmh) else stringResource(id = R.string.unit_ms),
+                    icon = Icons.Default.Air,
+                    onClick = onToggleWindUnit
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
-                ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.pressure_unit_title)) },
-                    trailingContent = {
-                        Text(
-                            text = if (pressureUnit == AppConstants.PRESSURE_UNIT_MMHG) stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
-                            style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Bold
-                        )
-                    },
-                    modifier = Modifier.clickable { onTogglePressureUnit() }
+                SettingsItem(
+                    title = stringResource(id = R.string.pressure_unit_title),
+                    value = if (pressureUnit == AppConstants.PRESSURE_UNIT_MMHG) stringResource(id = R.string.unit_mmhg) else stringResource(id = R.string.unit_mbar),
+                    icon = Icons.Default.Compress,
+                    onClick = onTogglePressureUnit
                 )
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Appearance & Other Section
         Text(
             text = stringResource(id = R.string.other_section_title),
             style = MaterialTheme.typography.labelLarge,
@@ -224,9 +220,9 @@ fun SettingsScreenContent(
             modifier = Modifier.padding(start = 4.dp, bottom = 8.dp)
         )
 
-        ElevatedCard(
+        OutlinedCard(
             modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp)
+            shape = RoundedCornerShape(20.dp)
         ) {
             Column {
                 val currentLangDisplay = when (currentAppLocale) {
@@ -236,28 +232,15 @@ fun SettingsScreenContent(
                     else -> stringResource(id = R.string.system_default)
                 }
 
-                ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.language_setting_title)) },
-                    trailingContent = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = currentLangDisplay,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    modifier = Modifier.clickable { isLanguageDialogOpen = true }
+                SettingsItem(
+                    title = stringResource(id = R.string.language_setting_title),
+                    value = currentLangDisplay,
+                    icon = Icons.Default.Language,
+                    showChevron = true,
+                    onClick = { isLanguageDialogOpen = true }
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
                 val currentThemeDisplay = when (themeMode) {
                     AppConstants.THEME_LIGHT -> stringResource(id = R.string.theme_light)
@@ -266,37 +249,39 @@ fun SettingsScreenContent(
                     else -> stringResource(id = R.string.theme_system)
                 }
 
-                ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.theme_setting_title)) },
-                    trailingContent = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = currentThemeDisplay,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Icon(
-                                imageVector = Icons.Default.ChevronRight,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                        }
-                    },
-                    modifier = Modifier.clickable { isThemeDialogOpen = true }
+                SettingsItem(
+                    title = stringResource(id = R.string.theme_setting_title),
+                    value = currentThemeDisplay,
+                    icon = Icons.Default.Palette,
+                    showChevron = true,
+                    onClick = { isThemeDialogOpen = true }
                 )
 
-                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f))
+                HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp), color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f))
 
                 ListItem(
-                    headlineContent = { Text(stringResource(id = R.string.dynamic_color_title)) },
+                    headlineContent = {
+                        Text(
+                            text = stringResource(id = R.string.dynamic_color_title),
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.ColorLens,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(22.dp)
+                        )
+                    },
                     trailingContent = {
                         Switch(
                             checked = isDynamicColor,
                             onCheckedChange = { onToggleDynamicColor() }
                         )
-                    }
+                    },
+                    colors = ListItemDefaults.colors(containerColor = Color.Transparent)
                 )
             }
         }
@@ -335,10 +320,59 @@ fun SettingsScreenContent(
 }
 
 @Composable
+private fun SettingsItem(
+    title: String,
+    value: String,
+    icon: ImageVector,
+    showChevron: Boolean = false,
+    onClick: () -> Unit
+) {
+    ListItem(
+        headlineContent = {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold
+            )
+        },
+        leadingContent = {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(22.dp)
+            )
+        },
+        trailingContent = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold
+                )
+                if (showChevron) {
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        },
+        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
+        modifier = Modifier.clickable { onClick() }
+    )
+}
+
+@Composable
 fun LanguageSelectionDialog(
     currentLangTag: String,
     onLanguageSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val systemLang = Locale.getDefault().language
     val isSystemRussian = systemLang == AppConstants.LANG_RU
@@ -355,7 +389,9 @@ fun LanguageSelectionDialog(
     val systemDefaultText = stringResource(id = R.string.system_default)
 
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
         title = {
             Text(
                 text = stringResource(id = R.string.language_setting_title),
@@ -379,7 +415,11 @@ fun LanguageSelectionDialog(
                             onClick = { onLanguageSelected(tag) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = if (currentLangTag == tag) FontWeight.Bold else FontWeight.Normal
+                        )
                     }
                 }
             }
@@ -396,7 +436,8 @@ fun LanguageSelectionDialog(
 fun ThemeSelectionDialog(
     currentThemeMode: String,
     onThemeSelected: (String) -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val options = listOf(
         AppConstants.THEME_SYSTEM to stringResource(id = R.string.theme_system),
@@ -406,7 +447,9 @@ fun ThemeSelectionDialog(
     )
 
     AlertDialog(
+        modifier = modifier,
         onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(24.dp),
         title = {
             Text(
                 text = stringResource(id = R.string.theme_setting_title),
@@ -429,7 +472,11 @@ fun ThemeSelectionDialog(
                             onClick = { onThemeSelected(mode) }
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text(text = label, style = MaterialTheme.typography.bodyLarge)
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodyLarge,
+                            fontWeight = if (currentThemeMode == mode) FontWeight.Bold else FontWeight.Normal
+                        )
                     }
                 }
             }

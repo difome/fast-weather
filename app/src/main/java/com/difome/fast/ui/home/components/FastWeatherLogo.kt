@@ -37,7 +37,6 @@ fun FastWeatherLogo(
             ),
         contentAlignment = Alignment.Center
     ) {
-        // Cloud centered at top
         Icon(
             imageVector = Icons.Default.Cloud,
             contentDescription = null,

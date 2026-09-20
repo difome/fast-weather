@@ -36,7 +36,7 @@
     <string name="theme_amoled">AMOLED Темна</string>
     <string name="dynamic_color_title">Динамічні кольори</string>
     <string name="app_version">Версія %s</string>
-    <string name="system_default">Системна за замовчуванням</string>
+    <string name="system_default">Системна</string>
     <string name="unit_celsius">°C</string>
     <string name="unit_fahrenheit">°F</string>
     <string name="unit_ms">м/с</string>

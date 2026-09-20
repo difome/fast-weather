@@ -40,7 +40,7 @@ import com.difome.fast.R
 import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.DayForecast
 import com.difome.fast.data.model.WeatherConditionHelper
-import com.difome.fast.ui.theme.WeatherSunYellow
+import com.difome.fast.ui.theme.WeatherRainBlue
 
 @Composable
 fun DailyForecastCard(
@@ -130,12 +130,12 @@ fun DailyForecastCard(
                                 imageVector = Icons.Outlined.Umbrella,
                                 contentDescription = null,
                                 modifier = Modifier.size(12.dp),
-                                tint = if (day.precipProbability > 0) Color(0xFF38BDF8) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                                tint = if (day.precipProbability > 0) WeatherRainBlue else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                             )
                             Text(
                                 text = "${day.precipProbability}%",
                                 style = MaterialTheme.typography.labelSmall,
-                                color = if (day.precipProbability > 0) Color(0xFF38BDF8) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                color = if (day.precipProbability > 0) WeatherRainBlue else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                                 fontWeight = if (day.precipProbability > 0) FontWeight.Bold else FontWeight.Normal
                             )
                         }
@@ -144,8 +144,8 @@ fun DailyForecastCard(
                     Icon(
                         imageVector = WeatherConditionHelper.getIcon(day.conditionCode),
                         contentDescription = null,
-                        modifier = Modifier.size(24.dp),
-                        tint = WeatherSunYellow
+                        modifier = Modifier.size(36.dp),
+                        tint = Color.Unspecified
                     )
 
                     Text(

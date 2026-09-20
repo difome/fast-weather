@@ -1,34 +1,30 @@
 package com.difome.fast.data.model
 
 import androidx.annotation.StringRes
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AcUnit
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Dehaze
-import androidx.compose.material.icons.filled.NightsStay
-import androidx.compose.material.icons.filled.Thunderstorm
-import androidx.compose.material.icons.filled.WaterDrop
-import androidx.compose.material.icons.filled.WbCloudy
-import androidx.compose.material.icons.filled.WbSunny
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import com.difome.fast.R
 
 object WeatherConditionHelper {
 
+    @Composable
     fun getIcon(code: Int, isNight: Boolean = false): ImageVector {
         val thunderCodes = setOf(140, 141, 142, 240, 241, 242, 340, 341, 342, 440, 441, 442)
-        val rainCodes = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330, 410, 420, 430)
-        val snowCodes = setOf(112, 122, 132, 212, 222, 232, 312, 322, 332, 412, 422, 432)
+        val rainSunCodes = setOf(110, 120, 130, 210, 220, 230, 310, 320, 330)
+        val rainOvercastCodes = setOf(410, 420, 430)
+        val snowCodes = setOf(103, 111, 112, 121, 122, 131, 132, 211, 212, 221, 222, 231, 232, 311, 312, 321, 322, 331, 332, 411, 412, 421, 422, 431, 432)
 
         return when (code) {
-            in thunderCodes -> Icons.Default.Thunderstorm
-            in rainCodes -> Icons.Default.WaterDrop
-            in snowCodes -> Icons.Default.AcUnit
-            in 400..409 -> Icons.Default.Cloud
-            in 600..699 -> Icons.Default.Dehaze
-            in 100..309 -> if (isNight) Icons.Default.Cloud else Icons.Default.WbCloudy
-            0 -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
-            else -> if (isNight) Icons.Default.NightsStay else Icons.Default.WbSunny
+            in thunderCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_thunder)
+            in rainSunCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain_sun)
+            in rainOvercastCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_rain)
+            in snowCodes -> ImageVector.vectorResource(id = R.drawable.ic_weather_snow)
+            600 -> ImageVector.vectorResource(id = R.drawable.ic_weather_fog)
+            in 400..409 -> ImageVector.vectorResource(id = R.drawable.ic_weather_cloud)
+            in 100..399, 500 -> if (isNight) ImageVector.vectorResource(id = R.drawable.ic_weather_partly_cloudy_night) else ImageVector.vectorResource(id = R.drawable.ic_weather_partly_cloudy_day)
+            0 -> if (isNight) ImageVector.vectorResource(id = R.drawable.ic_weather_night) else ImageVector.vectorResource(id = R.drawable.ic_weather_sun)
+            else -> if (isNight) ImageVector.vectorResource(id = R.drawable.ic_weather_night) else ImageVector.vectorResource(id = R.drawable.ic_weather_sun)
         }
     }
 

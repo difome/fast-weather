@@ -61,7 +61,6 @@ fun WeatherMetricsRow(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Row 1: Humidity & Wind
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -120,7 +119,6 @@ fun WeatherMetricsRow(
             }
         }
 
-        // Row 2: Precipitation & Pressure
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -146,7 +144,6 @@ fun WeatherMetricsRow(
             )
         }
 
-        // Row 3: Sunrise / Sunset & Cloudiness
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
