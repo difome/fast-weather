@@ -71,6 +71,7 @@ fun HomeScreen(
         pressureUnit = pressureUnit,
         searchSuggestions = searchSuggestions,
         onSearchQueryChange = { viewModel.searchCities(it) },
+        onClearSearch = { viewModel.clearSearch() },
         onCitySelected = { viewModel.fetchWeather(it, forceReload = true) },
         onSettingsClick = onSettingsClick,
         onDailyForecastClick = onDailyForecastClick,
@@ -90,6 +91,7 @@ fun HomeScreenContent(
     pressureUnit: String = AppConstants.PRESSURE_UNIT_MBAR,
     searchSuggestions: List<LocationSuggestion> = emptyList(),
     onSearchQueryChange: (String) -> Unit = {},
+    onClearSearch: () -> Unit = {},
     onCitySelected: (String) -> Unit = {},
     onSettingsClick: () -> Unit = {},
     onDailyForecastClick: () -> Unit = {},
@@ -111,9 +113,10 @@ fun HomeScreenContent(
     val dismissSearch = {
         isSearchOpen = false
         searchQuery = ""
+        onClearSearch()
         onSearchQueryChange("")
     }
-    val isRefreshing = isUserRefreshing && uiState is HomeUiState.Loading
+    val isRefreshing = isUserRefreshing
 
     LaunchedEffect(uiState) {
         if (isUserRefreshing && uiState !is HomeUiState.Loading) {

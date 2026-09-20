@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +37,7 @@ import com.difome.fast.common.AppConstants
 import com.difome.fast.common.UnitConverter
 import com.difome.fast.data.model.WeatherUI
 import com.difome.fast.ui.theme.MyFastTheme
+import com.difome.fast.ui.theme.WeatherNightPurple
 import com.difome.fast.ui.theme.WeatherSunYellow
 import java.util.Locale
 
@@ -196,7 +196,7 @@ fun WeatherMetricsRow(
                                 imageVector = Icons.Default.NightsStay,
                                 contentDescription = null,
                                 modifier = Modifier.size(14.dp),
-                                tint = Color(0xFFC7D2FE)
+                                tint = WeatherNightPurple
                             )
                             Spacer(modifier = Modifier.width(4.dp))
                             Text(

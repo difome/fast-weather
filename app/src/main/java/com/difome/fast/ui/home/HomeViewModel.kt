@@ -10,7 +10,6 @@ import com.difome.fast.data.model.LocationSuggestion
 import com.difome.fast.data.repository.getSinoptikLanguage
 import com.difome.fast.data.repository.loadWeather
 import com.difome.fast.data.repository.searchLocations
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -67,15 +66,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _searchSuggestions.value = emptyList()
 
         viewModelScope.launch {
-            cityPreferences.saveSelectedCity(locationId)
             _uiState.value = HomeUiState.Loading
+            cityPreferences.saveSelectedCity(locationId)
             try {
-                val startTime = System.currentTimeMillis()
                 val weather = loadWeather(currentLocationId)
-                val elapsedTime = System.currentTimeMillis() - startTime
-                if (elapsedTime < 500) {
-                    delay(500 - elapsedTime)
-                }
                 _uiState.value = HomeUiState.Success(weather)
             } catch (e: Exception) {
                 _uiState.value = HomeUiState.Error(e.message ?: "Err")
@@ -92,7 +86,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             try {
                 val results = searchLocations(query)
                 _searchSuggestions.value = results
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _searchSuggestions.value = emptyList()
             }
         }
